@@ -1,3 +1,10 @@
+// Save ?next from the URL to localStorage so we can redirect after login
+const urlParams = new URLSearchParams(window.location.search);
+const next = urlParams.get('next');
+if (next) {
+    localStorage.setItem('next_path', next);
+}
+
 // Initialize Supabase client
 const supabaseUrl = 'https://mblbjlnakohvcwbxnghu.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ibGJqbG5ha29odmN3YnhuZ2h1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ1OTg5OTgsImV4cCI6MjA2MDE3NDk5OH0.P9AYR9nr5dA7NPJscGliPT4Ygs69AAHVNrB1a4R2dOw';
@@ -66,7 +73,11 @@ async function handleSignupSuccess(user) {
         }
         
         // Redirect based on the subscription tier
-        if (data.user.subscription_tier === 'FREE') {
+        const nextPath = localStorage.getItem('next_path');
+        if (nextPath) {
+            localStorage.removeItem('next_path');
+            window.location.href = nextPath;
+        } else if (data.user.subscription_tier === 'FREE') {
             window.location.href = '/accounts/dashboard/';
         } else {
             window.location.href = '/accounts/checkout/';

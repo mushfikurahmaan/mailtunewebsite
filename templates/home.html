@@ -87,7 +87,7 @@
                         Communicate with precision and clarity. Mail Tune helps you adjust your email's tone to fit any situation, making your messages more effective.
                     </p>
                     <div class="mt-10 flex flex-col sm:flex-row gap-4">
-                        <a href="{% url 'accounts:signup_page' %}" data-plan-type="FREE" class="signup-cta bg-primary hover:bg-opacity-80 text-white px-8 py-3 rounded-lg font-medium text-center transition pricing-button" onclick="if (localStorage.getItem('mailtune_token')) { window.location.href='/accounts/dashboard/'; return false; }">
+                        <a href="{% url 'accounts:signup_page' %}?plan=FREE&next=/accounts/dashboard/" data-plan-type="FREE" class="signup-cta bg-primary hover:bg-opacity-80 text-white px-8 py-3 rounded-lg font-medium text-center transition pricing-button" onclick="if (localStorage.getItem('mailtune_token')) { window.location.href='/accounts/dashboard/'; return false; }">
                             Try for free
                         </a>
                         <a href="#examples" class="border border-gray-700 hover:border-primary text-white px-8 py-3 rounded-lg font-medium text-center transition">
@@ -466,7 +466,7 @@
                             </div>
                             
                             <div class="mt-auto">
-                                <a href="{% url 'accounts:signup_page' %}?plan=FREE" data-plan-type="FREE" class="w-full py-2 border border-primary text-primary rounded-lg font-medium hover:bg-primary hover:bg-opacity-10 transition block text-center">Get Started</a>
+                                <a href="{% url 'accounts:signup_page' %}?plan=FREE&next=/accounts/dashboard/" data-plan-type="FREE" class="w-full py-2 border border-primary text-primary rounded-lg font-medium hover:bg-primary hover:bg-opacity-10 transition block text-center">Get Started</a>
                             </div>
                         </div>
                         <!-- Starter -->
@@ -620,7 +620,7 @@
                             <span>Your emails are completely secure — we never store them</span>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="{% url 'accounts:signup_page' %}" data-plan-type="FREE" class="bg-primary hover:bg-opacity-80 text-white px-8 py-3 rounded-lg font-medium text-center transition pricing-button" onclick="if (localStorage.getItem('mailtune_token')) { window.location.href='/accounts/dashboard/'; return false; }">
+                            <a href="{% url 'accounts:signup_page' %}?plan=FREE&next=/accounts/dashboard/" data-plan-type="FREE" class="bg-primary hover:bg-opacity-80 text-white px-8 py-3 rounded-lg font-medium text-center transition pricing-button" onclick="if (localStorage.getItem('mailtune_token')) { window.location.href='/accounts/dashboard/'; return false; }">
                                 Try for free
                             </a>
                             <a href="#examples" class="border border-gray-700 hover:border-primary text-white px-8 py-3 rounded-lg font-medium text-center transition">
@@ -885,7 +885,6 @@
                     <div class="col-span-2 sm:col-span-1 mt-6 sm:mt-0">
                         <h3 class="text-white-900 font-semibold mb-3 sm:mb-4 text-sm uppercase">MORE</h3>
                         <ul class="space-y-2">
-                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Newsletter for makers</a></li>
                             <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Sign In</a></li>
                             <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Sign Up</a></li>
                         </ul>
@@ -897,7 +896,7 @@
                 <div class="flex items-center mb-4 md:mb-0">
                     <img src="{% static 'images/tars.jpeg' %}" alt="Creator" class="h-8 w-8 sm:h-10 sm:w-10 rounded-full mr-3">
                     <div>
-                        <p class="text-white-800 text-sm sm:text-base">Hey Curious 👋 I'm <span class="font-medium">Tars</span>, the creator of MailTune. You can follow my work on <a href="https://x.com/tars4mars" class="text-violet-600 hover:underline">Twitter</a>.</p>
+                        <p class="text-white-800 text-sm sm:text-base">Hey Curious 👋 I'm <span class="font-medium">Tars</span>, the creator of MailTune. You can follow my work on <a href="https://x.com/tars4mars" target="_blank" class="text-violet-600 hover:underline">Twitter</a>.</p>
                     </div>
                 </div>
             </div>

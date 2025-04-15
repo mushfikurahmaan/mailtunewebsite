@@ -68,7 +68,7 @@
             if (!token || !userData) {
                 // Not authenticated, redirect to login page
                 console.log('User not authenticated, redirecting to login');
-                window.location.href = "{{ redirect_url }}";
+                window.location.href = "{{ redirect_url }}?next=" + encodeURIComponent(window.location.pathname);
             } else {
                 // Authenticated, show the content and hide the loader
                 console.log('User authenticated, showing content');
