@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail Tune</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'images/icon-16px.png' %}" type="image/png" sizes="16x16">
+    <link rel="icon" href="{% static 'images/icon-32px.png' %}" type="image/png" sizes="32x32">
+    <link rel="stylesheet" href="{% static 'css/dist/output.css' %}">
+    <!-- Import Inter font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#A15DF8',
+                        black: '#000000',
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Include home.js for auth check -->
+    <script src="{% static 'js/home.js' %}"></script>
+</head>
+<body class="bg-black text-white font-inter">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 backdrop-blur-lg bg-black bg-opacity-80 border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <img src="{% static 'images/icon-32px.png' %}" alt="Mail Tune Logo" class="h-8 w-8 mr-2">
+                    <span class="font-bold text-xl">Mail Tune</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#what-is-it" class="text-gray-300 hover:text-white transition">What is it</a>
+                    <a href="#how-it-works" class="text-gray-300 hover:text-white transition">How it works</a>
+                    <a href="#examples" class="text-gray-300 hover:text-white transition">Examples</a>
+                    <a href="#pricing" class="text-gray-300 hover:text-white transition">Pricing</a>
+                    <a href="#testimonials" class="text-gray-300 hover:text-white transition">Testimonials</a>
+                </div>
+                <div class="flex items-center space-x-4 navbar-end">
+                    <a href="{% url 'accounts:signup_page' %}" data-plan-type="FREE" class="signup-cta bg-primary hover:bg-opacity-80 text-white px-4 py-2 rounded-lg transition pricing-button" onclick="if (localStorage.getItem('mailtune_token')) { window.location.href='/accounts/dashboard/'; return false; }">Fix tone now</a>
+                    <!-- Mobile menu button -->
+                    <button id="mobile-menu-button" class="md:hidden text-gray-300 hover:text-white focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile menu, show/hide based on menu state -->
+            <div id="mobile-menu" class="md:hidden hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 border-t border-gray-700 mt-2">
+                    <a href="#what-is-it" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">What is it</a>
+                    <a href="#how-it-works" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">How it works</a>
+                    <a href="#examples" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">Examples</a>
+                    <a href="#pricing" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">Pricing</a>
+                    <a href="#testimonials" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">Testimonials</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen pt-24 pb-16 overflow-hidden">
+        <!-- Decorative elements -->
+        <div class="absolute top-20 left-1/4 w-64 h-64 bg-primary opacity-10 rounded-full filter blur-3xl"></div>
+        <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-primary opacity-10 rounded-full filter blur-3xl"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                <div class="order-2 lg:order-1">
+                    <h1 class="hero-text font-bold leading-tight text-3xl sm:text-4xl md:text-5xl">
+                        <span class="flex items-center">
+                            <span>From Send Later to <span class="text-primary">Nailed It.</span></span>
+                        </span>
+                    </h1>
+                    <p class="mt-6 text-lg sm:text-xl text-gray-300">
+                        Communicate with precision and clarity. Mail Tune helps you adjust your email's tone to fit any situation, making your messages more effective.
+                    </p>
+                    <div class="mt-10 flex flex-col sm:flex-row gap-4">
+                        <a href="{% url 'accounts:signup_page' %}" data-plan-type="FREE" class="signup-cta bg-primary hover:bg-opacity-80 text-white px-8 py-3 rounded-lg font-medium text-center transition pricing-button" onclick="if (localStorage.getItem('mailtune_token')) { window.location.href='/accounts/dashboard/'; return false; }">
+                            Try for free
+                        </a>
+                        <a href="#examples" class="border border-gray-700 hover:border-primary text-white px-8 py-3 rounded-lg font-medium text-center transition">
+                            See examples
+                        </a>
+                    </div>
+                </div>
+                <div class="order-1 lg:order-2 relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black to-transparent z-10 lg:hidden"></div>
+                    <div class="hidden lg:block rotate-3d bg-black border border-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <div class="text-sm text-gray-400">Mail Tune</div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-black p-3 sm:p-4 rounded-lg border border-gray-800">
+                                <div class="text-sm text-gray-400 mb-2">Original Email</div>
+                                <p class="text-white text-sm sm:text-base">I need the report ASAP. This is the third time I'm asking. Let me know when it's done.</p>
+                            </div>
+                            <div class="flex justify-center">
+                                <svg class="w-6 h-6 sm:w-8 sm:h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                                </svg>
+                            </div>
+                            <div class="bg-black p-3 sm:p-4 rounded-lg border border-primary">
+                                <div class="flex justify-between mb-2">
+                                    <div class="text-sm text-gray-400">Tuned Email</div>
+                                    <div class="text-sm text-primary">Professional & Polite</div>
+                                </div>
+                                <p class="text-white text-sm sm:text-base">I wanted to follow up regarding the report we discussed. This is my third request, and I'd greatly appreciate an update on its status. Could you please let me know when you expect it to be completed?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What Is It Section -->
+    <section id="what-is-it" class="py-12 sm:py-16 relative">
+        <div class="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent "></div>
+    
+        <!-- Decorative blob -->
+        <div class="absolute right-0 top-1/2 transform -translate-y-1/2 w-72 h-72 bg-primary opacity-10 blob-shape filter blur-3xl"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 border border-gray-800 rounded-2xl p-4 sm:p-6">
+            <div class="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center">
+                <div class="lg:w-1/2">
+                    <div class="bg-transparent border border-gray-800 rounded-2xl p-6 relative transform transition hover:-translate-y-2">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-transparent rounded-lg p-4 border border-gray-800 transform hover:scale-105 transition">
+                                <div class="w-12 h-12 rounded-full bg-primary bg-opacity-20 flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold">Professional</h3>
+                                <p class="text-sm text-gray-400 mt-2">Clear, respectful, and suitable for workplace communication</p>
+                            </div>
+                            <div class="bg-transparent rounded-lg p-4 border border-gray-800 transform hover:scale-105 transition">
+                                <div class="w-12 h-12 rounded-full bg-primary bg-opacity-20 flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold">Friendly</h3>
+                                <p class="text-sm text-gray-400 mt-2">Warm, approachable, and conversational in nature</p>
+                            </div>
+                            <div class="bg-transparent rounded-lg p-4 border border-gray-800 transform hover:scale-105 transition">
+                                <div class="w-12 h-12 rounded-full bg-primary bg-opacity-20 flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold">Direct</h3>
+                                <p class="text-sm text-gray-400 mt-2">Straightforward, concise, and to the point</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-1/2">
+                    <h2 class="text-3xl font-bold mb-6">What is <span class="text-primary">tone</span> in mail?</h2>
+                    <p class="text-gray-300 mb-4">
+                        Email tone is the attitude and emotion conveyed in your written communication. It significantly impacts how your message is perceived and can make the difference between effective and ineffective communication.
+                    </p>
+                    <p class="text-gray-300 mb-6">
+                        The right tone ensures your message is received as intended, whether you're expressing urgency, showing appreciation, or requesting information. It helps build relationships, avoid misunderstandings, and achieve your communication goals.
+                    </p>
+                    <div class="flex gap-4 items-center">
+                        <div class="h-12 w-1 bg-primary rounded-full"></div>
+                        <p class="text-xl text-gray-200">
+                            It's not just what you say, but how you say it.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-16 pb-32 sm:pb-16 relative mt-4">
+        <div class="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent"></div>
+        
+        <!-- Decorative elements -->
+        <div class="absolute left-0 top-1/3 w-64 h-64 bg-primary opacity-10 rounded-full filter blur-3xl"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 border border-gray-800 rounded-2xl p-6 mb-16 sm:mb-6">
+            <h2 class="text-3xl font-bold mb-12 text-center">How <span class="text-primary">Mail Tune</span> works</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="bg-transparent border border-gray-800 rounded-2xl p-6 relative transform transition hover:-translate-y-2">
+                    <div class="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-primary flex items-center justify-center text-xl font-bold shadow-lg">1</div>
+                    <h3 class="text-xl font-semibold mt-4 mb-3">Install our extension</h3>
+                    <p class="text-gray-400">
+                        Download our browser extension with a single click. Available for all major browsers to instantly transform your emails.
+                    </p>
+                </div>
+                
+                <div class="bg-transparent border border-gray-800 rounded-2xl p-6 relative transform transition hover:-translate-y-2 md:mt-8">
+                    <div class="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-primary flex items-center justify-center text-xl font-bold shadow-lg">2</div>
+                    <h3 class="text-xl font-semibold mt-4 mb-3">Select your tone</h3>
+                    <p class="text-gray-400">
+                        With our extension active, choose from multiple tone options including professional, friendly, direct, apologetic, or create a custom tone.
+                    </p>
+                </div>
+                
+                <div class="bg-transparent border border-gray-800 rounded-2xl p-6 relative transform transition hover:-translate-y-2 md:mt-16">
+                    <div class="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-primary flex items-center justify-center text-xl font-bold shadow-lg">3</div>
+                    <h3 class="text-xl font-semibold mt-4 mb-3">Get your tuned message</h3>
+                    <p class="text-gray-400">
+                        Our AI instantly transforms your email while preserving your original meaning and intent, but with the perfect tone, right in your favorite email client.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-20 bg-transparent border border-gray-800 rounded-2xl overflow-hidden pb-20 sm:pb-0">
+                <div class="md:flex">
+                    <div class="md:w-1/2 p-8 pr-12 sm:pr-8 relative z-20">
+                        <h3 class="text-2xl font-semibold mb-4">Powered by advanced AI</h3>
+                        <p class="text-gray-300 mb-6">
+                            Mail Tune leverages state-of-the-art large language models specifically trained on professional communications to ensure your emails hit the right note every time, directly within your browser.
+                        </p>
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex">
+                                <svg class="w-6 h-6 text-primary mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Maintains your original message content</span>
+                            </li>
+                            <li class="flex">
+                                <svg class="w-6 h-6 text-primary mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Adjusts language for appropriate formality</span>
+                            </li>
+                            <li class="flex">
+                                <svg class="w-6 h-6 text-primary mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Removes unintentional negative connotations</span>
+                            </li>
+                            <li class="flex">
+                                <svg class="w-6 h-6 text-primary mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Enhances clarity and impact</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="md:w-1/2 bg-transparent p-4 pt-0 flex items-center justify-center">
+                        <div class="rotate-3d relative w-full max-w-md mt-10 md:-mt-20 mb-16 md:mb-0">
+                            <!-- Browser Window Frame -->
+                            <div class="bg-gray-900 rounded-t-lg border border-gray-700 overflow-hidden shadow-xl">
+                                <!-- Browser Tab and Controls -->
+                                <div class="bg-gray-800 px-4 py-2 flex items-center border-b border-gray-700">
+                                    <div class="flex space-x-2 mr-4">
+                                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                    </div>
+                                    <div class="flex-1 bg-gray-700 rounded-full px-3 py-1 text-xs text-gray-300 flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path>
+                                        </svg>
+                                        mail.example.com
+                                    </div>
+                                </div>
+                                
+                                <!-- Email Composition Area -->
+                                <div class="p-4 bg-gray-900">
+                                    <div class="mb-3 flex items-center justify-between">
+                                        <div class="text-sm text-white">New Message</div>
+                                    </div>
+                                    <div class="border-b border-gray-700 pb-2 mb-2">
+                                        <input type="text" placeholder="To:" class="w-full bg-transparent text-sm text-gray-300 focus:outline-none">
+                                    </div>
+                                    <div class="border-b border-gray-700 pb-2 mb-2">
+                                        <input type="text" placeholder="Subject:" class="w-full bg-transparent text-sm text-gray-300 focus:outline-none">
+                                    </div>
+                                    <div class="mb-4 text-sm text-gray-300">
+                                        I need the report by tomorrow. This is urgent.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Extension Popup -->
+                            <div class="absolute sm:right-6 sm:top-16 right-2 top-10 bg-gray-800 rounded-lg border border-gray-700 shadow-2xl sm:w-64 w-56 p-4 pb-6 transform transition hover:scale-105 z-30">
+                                <div class="flex items-center mb-3">
+                                    <img src="{% static 'images/icon-32px.png' %}" alt="Mail Tune Logo" class="h-8 w-8 mr-2">
+                                    <span class="font-semibold text-white">Mail Tune</span>
+                                </div>
+                                <div class="space-y-3 mb-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs text-gray-400">Choose tone:</span>
+                                        <select id="tone-selector" class="bg-gray-700 text-xs text-white rounded px-2 py-1 border border-gray-600">
+                                            <option value="professional">Professional</option>
+                                            <option value="friendly">Friendly</option>
+                                            <option value="polite">Polite</option>
+                                        </select>
+                                    </div>
+                                    <div id="professional-tone" class="bg-primary bg-opacity-10 border border-primary border-opacity-30 rounded-md p-2">
+                                        <p class="text-xs text-white">I wanted to follow up regarding the report. Could you please provide it by tomorrow? It's a high priority item for our team.</p>
+                                    </div>
+                                    <div id="friendly-tone" class="bg-primary bg-opacity-10 border border-primary border-opacity-30 rounded-md p-2 hidden">
+                                        <p class="text-xs text-white">Hey there! Just following up on the report we discussed — any chance you could send it over by tomorrow? We're really looking forward to reviewing it!</p>
+                                    </div>
+                                    <div id="polite-tone" class="bg-primary bg-opacity-10 border border-primary border-opacity-30 rounded-md p-2 hidden">
+                                        <p class="text-xs text-white">I hope this message finds you well. I'm writing to kindly inquire about the status of the report. Would it be possible to have it by tomorrow? We would greatly appreciate it.</p>
+                                    </div>
+                                </div>
+                                <button class="w-full bg-primary text-white text-xs py-2 rounded-md hover:bg-opacity-90 transition">
+                                    Apply to Email
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Example Conversations Section -->
+    <section id="examples" class="py-16 relative">
+        <div class="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent"></div>
+        
+        <!-- Decorative blob -->
+        <div class="absolute right-10 top-1/3 w-80 h-80 bg-primary opacity-10 blob-shape filter blur-3xl"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 border border-gray-800 rounded-2xl p-6">
+            <h2 class="text-3xl font-bold mb-4 text-center">Example Conversations</h2>
+            <p class="text-gray-300 text-center max-w-2xl mx-auto mb-12">
+                See how Mail Tune transforms real messages to strike the perfect tone for any situation.
+            </p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Example 1 -->
+                <div class="bg-transparent border border-gray-800 rounded-xl overflow-hidden transform transition hover:-translate-y-1 hover:shadow-xl">
+                    <div class="border-b border-gray-800 p-4">
+                        <div class="text-primary font-medium mb-1">Urgent Request</div>
+                        <div class="text-sm text-gray-400">Original Message</div>
+                    </div>
+                    <div class="p-4 bg-transparent">
+                        <p class="text-white">
+                            I need the report NOW. Been waiting for days and my boss is asking about it. Need it ASAP!!!
+                        </p>
+                    </div>
+                    <div class="border-t border-gray-800 p-4">
+                        <div class="flex justify-between mb-1">
+                            <div class="text-sm text-gray-400">Tuned Message</div>
+                            <div class="text-sm text-primary">Professional</div>
+                        </div>
+                        <p class="text-white">
+                            I'm following up regarding the report we discussed. As my manager has requested an update, I would greatly appreciate if you could send it at your earliest convenience. Thank you for your assistance with this time-sensitive matter.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Example 2 -->
+                <div class="bg-transparent border border-gray-800 rounded-xl overflow-hidden transform transition hover:-translate-y-1 hover:shadow-xl lg:translate-y-4">
+                    <div class="border-b border-gray-800 p-4">
+                        <div class="text-primary font-medium mb-1">Team Feedback</div>
+                        <div class="text-sm text-gray-400">Original Message</div>
+                    </div>
+                    <div class="p-4 bg-transparent">
+                        <p class="text-white">
+                            The presentation was disappointing. The data was wrong and the slides looked unprofessional. We need to do better next time.
+                        </p>
+                    </div>
+                    <div class="border-t border-gray-800 p-4">
+                        <div class="flex justify-between mb-1">
+                            <div class="text-sm text-gray-400">Tuned Message</div>
+                            <div class="text-sm text-primary">Constructive</div>
+                        </div>
+                        <p class="text-white">
+                            I'd like to provide some feedback on yesterday's presentation. I think we have an opportunity to strengthen our data accuracy and visual design. Let's schedule some time to discuss how we can improve for our next presentation.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Example 3 -->
+                <div class="bg-transparent border border-gray-800 rounded-xl overflow-hidden transform transition hover:-translate-y-1 hover:shadow-xl">
+                    <div class="border-b border-gray-800 p-4">
+                        <div class="text-primary font-medium mb-1">Missed Deadline</div>
+                        <div class="text-sm text-gray-400">Original Message</div>
+                    </div>
+                    <div class="p-4 bg-transparent">
+                        <p class="text-white">
+                            Sorry I didn't finish on time. Had some other stuff come up. Will try to get it done tomorrow maybe.
+                        </p>
+                    </div>
+                    <div class="border-t border-gray-800 p-4">
+                        <div class="flex justify-between mb-1">
+                            <div class="text-sm text-gray-400">Tuned Message</div>
+                            <div class="text-sm text-primary">Apologetic</div>
+                        </div>
+                        <p class="text-white">
+                            I sincerely apologize for missing the deadline for this project. I encountered some unexpected priorities that required my immediate attention. I've rearranged my schedule and commit to delivering the completed work by tomorrow at 5pm. Thank you for your understanding.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <a href="{% url 'accounts:signup_page' %}" class="inline-block bg-primary hover:bg-opacity-80 text-white px-8 py-3 rounded-lg font-medium transition">
+                    Try with your own messages
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-12 sm:py-20 relative mt-4 sm:mt-8">
+        <div class="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent"></div>
+        
+        <!-- Decorative elements -->
+        <div class="absolute left-1/4 top-1/4 w-64 h-64 bg-primary opacity-10 rounded-full filter blur-3xl"></div>
+        <div class="absolute right-1/4 bottom-1/4 w-64 h-64 bg-primary opacity-10 rounded-full filter blur-3xl"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 border border-gray-800 rounded-2xl p-4 sm:p-6">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4 text-center">Simple, Transparent Pricing</h2>
+            <p class="text-gray-300 text-center max-w-2xl mx-auto mb-8 sm:mb-16">
+                Choose the plan that works best for you and your team.
+            </p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+                <!-- Free Plan -->
+                        <div class="border border-gray-800 rounded-lg p-4 hover:border-primary transition cursor-pointer flex flex-col h-full">
+                            <div>
+                                <div class="text-lg font-semibold mb-2">Free</div>
+                                <div class="text-2xl font-bold mb-1">$O<span class="text-sm text-gray-400"></div>
+                                <div class="text-xs invisible mb-4">Placeholder</div>
+                                <ul class="space-y-2 mb-4">
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">Up to 1,000 words included</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">5 email transformations</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">All tone options</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <a href="{% url 'accounts:signup_page' %}?plan=FREE" data-plan-type="FREE" class="w-full py-2 border border-primary text-primary rounded-lg font-medium hover:bg-primary hover:bg-opacity-10 transition block text-center">Get Started</a>
+                            </div>
+                        </div>
+                        <!-- Starter -->
+                        <div class="border border-gray-800 rounded-lg p-4 hover:border-primary transition cursor-pointer flex flex-col h-full">
+                            <div>
+                                <div class="text-lg font-semibold mb-2">Starter</div>
+                                <div class="text-2xl font-bold mb-1">$9<span class="text-sm text-gray-400">/month</span></div>
+                                <div class="text-xs text-gray-400 mb-4">Billed monthly</div>
+                                
+                                <ul class="space-y-2 mb-4">
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">10,000 words/month</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">100 emails/month</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">All tone options</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <a href="{% url 'accounts:signup_page' %}?plan=STARTER" data-plan-type="STARTER" class="w-full py-2 border border-primary text-primary rounded-lg font-medium hover:bg-primary hover:bg-opacity-10 transition block text-center pricing-button">Select Plan</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Premium Plan -->
+                        <div class="border border-primary rounded-lg p-4 bg-primary bg-opacity-5 relative flex flex-col h-full">
+                            <div class="absolute -top-3 right-3 bg-primary text-xs text-white px-2 py-0.5 rounded-full">Popular</div>
+                            <div>
+                                <div class="text-lg font-semibold mb-2">Premium</div>
+                                <div class="text-2xl font-bold mb-1">$19<span class="text-sm text-gray-400">/month</span></div>
+                                <div class="text-xs text-gray-400 mb-4">Billed monthly</div>
+                                
+                                <ul class="space-y-2 mb-4">
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">50,000 words/month</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">500 emails/month</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">All tone options</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">Priority support</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <a href="{% url 'accounts:signup_page' %}?plan=PREMIUM" data-plan-type="PREMIUM" class="w-full py-2 bg-primary text-white rounded-lg font-medium hover:bg-opacity-90 transition block text-center pricing-button">Select Plan</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Business Plan -->
+                        <div class="border border-gray-800 rounded-lg p-4 hover:border-primary transition cursor-pointer flex flex-col h-full">
+                            <div>
+                                <div class="text-lg font-semibold mb-2">Business</div>
+                                <div class="text-2xl font-bold mb-1">$49<span class="text-sm text-gray-400">/month</span></div>
+                                <div class="text-xs text-gray-400 mb-4">Billed monthly</div>
+                                
+                                <ul class="space-y-2 mb-4">
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">Unlimited words <span class="relative inline-block group">
+                                            <span class="text-primary cursor-pointer">🛈</span>
+                                            <span class="hidden group-hover:block absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-black text-xs text-white rounded border border-gray-700 z-50">Fair Use Policy: Includes up to 600,000 words/month. Performance may degrade beyond this to ensure quality for all users.</span>
+                                        </span></span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">Unlimited emails <span class="relative inline-block group">
+                                            <span class="text-primary cursor-pointer">🛈</span>
+                                            <span class="hidden group-hover:block absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-black text-xs text-white rounded border border-gray-700 z-50">Fair Use Policy: Includes up to 1,500 emails/month. Performance may degrade beyond this to ensure quality for all users.</span>
+                                        </span></span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">All tone options</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm">24/7 premium support</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <a href="{% url 'accounts:signup_page' %}?plan=BUSINESS" data-plan-type="BUSINESS" class="w-full py-2 border border-primary text-primary rounded-lg font-medium hover:bg-primary hover:bg-opacity-10 transition block text-center pricing-button">Select Plan</a>
+                            </div>
+                        </div>
+            </div>
+            
+            <div class="mt-16 text-center">
+                <a href="#" class="text-primary hover:underline">View full feature comparison →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upgrade Section -->
+    <section id="upgrade" class="py-16 relative mt-4">
+        <div class="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent"></div>
+        
+        <!-- Decorative elements -->
+        <div class="absolute left-20 top-1/2 transform -translate-y-1/2 w-72 h-72 bg-primary opacity-10 blob-shape filter blur-3xl"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 border border-gray-800 rounded-2xl p-6">
+            <div class="bg-transparent border border-gray-800 rounded-2xl overflow-hidden">
+                <div class="md:flex items-center">
+                    <div class="md:w-1/2 p-8 md:p-12">
+                        <h2 class="text-3xl font-bold mb-4">Try different approach</h2>
+                        <h3 class="text-2xl text-gray-400 mb-6">start your free trial today</h3>
+                        <p class="text-gray-300 mb-8">
+                            Upgrade to Mail Tune Premium and unlock unlimited message tuning, priority processing, and access to all tone styles. Transform your email communication today.
+                        </p>
+                        <div class="flex items-center text-sm text-gray-400 mb-8">
+                            <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Your emails are completely secure — we never store them</span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="{% url 'accounts:signup_page' %}" data-plan-type="FREE" class="bg-primary hover:bg-opacity-80 text-white px-8 py-3 rounded-lg font-medium text-center transition pricing-button" onclick="if (localStorage.getItem('mailtune_token')) { window.location.href='/accounts/dashboard/'; return false; }">
+                                Try for free
+                            </a>
+                            <a href="#examples" class="border border-gray-700 hover:border-primary text-white px-8 py-3 rounded-lg font-medium text-center transition">
+                                Try the demo
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 p-8 md:p-12 flex justify-center">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="bg-transparent p-4 rounded-lg border border-gray-700 transform hover:scale-105 transition">
+                                <div class="bg-primary bg-opacity-20 w-12 h-12 rounded-full flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold mb-2">Unlimited Tuning</h3>
+                                <p class="text-sm text-gray-400">Transform as many messages as you need</p>
+                            </div>
+                            <div class="bg-transparent p-4 rounded-lg border border-gray-700 transform hover:scale-105 transition">
+                                <div class="bg-primary bg-opacity-20 w-12 h-12 rounded-full flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold mb-2">GDPR Ready</h3>
+                                <p class="text-sm text-gray-400">Compliant with privacy regulations</p>
+                            </div>
+                            <div class="bg-transparent p-4 rounded-lg border border-gray-700 transform hover:scale-105 transition">
+                                <div class="bg-primary bg-opacity-20 w-12 h-12 rounded-full flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold mb-2">Custom Tones</h3>
+                                <p class="text-sm text-gray-400">Create personalized tone styles</p>
+                            </div>
+                            <div class="bg-transparent p-4 rounded-lg border border-gray-700 transform hover:scale-105 transition">
+                                <div class="bg-primary bg-opacity-20 w-12 h-12 rounded-full flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold mb-2">Cloud Sync</h3>
+                                <p class="text-sm text-gray-400">Access your tunes from any device</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-12 sm:py-20 relative mt-4 sm:mt-6">
+        <div class="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent"></div>
+        
+        <!-- Decorative elements -->
+        <div class="absolute right-0 bottom-0 w-96 h-96 bg-primary opacity-10 rounded-full filter blur-3xl"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 border border-gray-800 rounded-2xl p-4 sm:p-6">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4 text-center">What our users say</h2>
+            <p class="text-gray-300 text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+                Join thousands of professionals who have transformed their email communication.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Testimonial 1 -->
+                <div class="bg-transparent border border-gray-800 rounded-xl p-4 sm:p-6 transform transition hover:-translate-y-1 hover:shadow-xl">
+                    <div class="flex items-start mb-4">
+                        <div class="h-10 w-10 rounded-full bg-primary bg-opacity-20 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="text-primary font-bold">A</span>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">Alex Thompson</h3>
+                            <p class="text-sm text-gray-400">Marketing Manager</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm sm:text-base">
+                        Mail Tune has saved me from countless awkward email exchanges. I now communicate with confidence knowing my tone is always appropriate and professional.
+                    </p>
+                    <div class="mt-4 flex text-primary">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-transparent border border-gray-800 rounded-xl p-4 sm:p-6 transform transition hover:-translate-y-1 hover:shadow-xl md:translate-y-4">
+                    <div class="flex items-start mb-4">
+                        <div class="h-10 w-10 rounded-full bg-primary bg-opacity-20 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="text-primary font-bold">S</span>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">Sarah Chen</h3>
+                            <p class="text-sm text-gray-400">HR Director</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm sm:text-base">
+                        As someone who sends sensitive communications daily, Mail Tune has been invaluable. It helps me convey empathy while maintaining professionalism in every message.
+                    </p>
+                    <div class="mt-4 flex text-primary">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-transparent border border-gray-800 rounded-xl p-4 sm:p-6 transform transition hover:-translate-y-1 hover:shadow-xl">
+                    <div class="flex items-start mb-4">
+                        <div class="h-10 w-10 rounded-full bg-primary bg-opacity-20 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="text-primary font-bold">J</span>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">James Wilson</h3>
+                            <p class="text-sm text-gray-400">Sales Executive</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm sm:text-base">
+                        My response rates have gone up 30% since using Mail Tune. It helps me strike the perfect balance between friendly and professional when reaching out to prospects.
+                    </p>
+                    <div class="mt-4 flex text-primary">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-12 sm:py-20 relative mt-4 sm:mt-6">
+        <div class="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent"></div>
+        
+        <!-- Decorative elements -->
+        <div class="absolute left-0 top-1/3 w-80 h-80 bg-primary opacity-10 blob-shape filter blur-3xl"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 border border-gray-800 rounded-2xl p-4 sm:p-6">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4 text-center">Frequently Asked Questions</h2>
+            <p class="text-gray-300 text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+                Get answers to common questions about Mail Tune.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- FAQ Item 1 -->
+                <div class="bg-transparent rounded-lg border border-gray-800 p-5 hover:border-primary transition">
+                    <h3 class="text-xl font-semibold mb-4">How does Mail Tune work?</h3>
+                    <p class="text-gray-300">
+                        Mail Tune works as a browser extension that seamlessly integrates with your email client. Just install our extension, compose your email as usual, select your desired tone, and our AI will instantly improve your message—all without leaving your email platform.
+                    </p>
+                </div>
+                
+                <!-- FAQ Item 2 -->
+                <div class="bg-transparent rounded-lg border border-gray-800 p-5 hover:border-primary transition">
+                    <h3 class="text-xl font-semibold mb-4">Is my email data secure?</h3>
+                    <p class="text-gray-300">
+                        Absolutely. We never store your emails after processing. Your data is encrypted during transmission and we operate with strict privacy controls in compliance with GDPR regulations.
+                    </p>
+                </div>
+                
+                <!-- FAQ Item 3 -->
+                <div class="bg-transparent rounded-lg border border-gray-800 p-5 hover:border-primary transition">
+                    <h3 class="text-xl font-semibold mb-4">What tone options are available?</h3>
+                    <p class="text-gray-300">
+                        Mail Tune offers multiple tones including Professional, Friendly, Direct, Apologetic, Persuasive, and more. Premium plans allow for custom tone creation tailored to your specific communication needs.
+                    </p>
+                </div>
+                
+                <!-- FAQ Item 4 -->
+                <div class="bg-transparent rounded-lg border border-gray-800 p-5 hover:border-primary transition">
+                    <h3 class="text-xl font-semibold mb-4">How many emails can I tune?</h3>
+                    <p class="text-gray-300">
+                        This depends on your plan. Free users get 5 email transformations, Starter provides 100 emails per month, Premium offers 500 emails monthly, and Business users get unlimited emails (subject to fair use policy).
+                    </p>
+                </div>
+                
+                <!-- FAQ Item 5 -->
+                <div class="bg-transparent rounded-lg border border-gray-800 p-5 hover:border-primary transition">
+                    <h3 class="text-xl font-semibold mb-4">Which browsers and email clients are supported?</h3>
+                    <p class="text-gray-300">
+                        Our extension works with Chrome, Firefox, Safari, and Brave browsers. It's compatible with Gmail, Outlook, Yahoo Mail, and most web-based email clients. We're continuously expanding our compatibility to support more platforms.
+                    </p>
+                </div>
+                
+                <!-- FAQ Item 6 -->
+                <div class="bg-transparent rounded-lg border border-gray-800 p-5 hover:border-primary transition">
+                    <h3 class="text-xl font-semibold mb-4">Can I use Mail Tune for languages other than English?</h3>
+                    <p class="text-gray-300">
+                        Currently, Mail Tune works best with English text. We're actively working on expanding our language support to include other major languages in future updates.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 sm:py-16 border-t border-gray-800 mt-4 sm:mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between mb-8 md:mb-12">
+                <div class="mb-8 md:mb-0">
+                    <div class="flex items-center mb-2">
+                        <img src="{% static 'images/icon-32px.png' %}" alt="Creator" class="h-8 w-8 sm:h-10 sm:w-10 rounded-full mr-3">
+                        <span class="font-bold text-xl">Mail Tune</span>
+                    </div>
+                    <p class="text-gray-600 max-w-xs">Transform your email tone with AI.</p>
+                    <p class="text-gray-500 mt-4 text-sm">Copyright © 2025 - All rights reserved</p>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 md:gap-16">
+                    <div>
+                        <h3 class="text-white-900 font-semibold mb-3 sm:mb-4 text-sm uppercase">LINKS</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Support</a></li>
+                            <li><a href="#pricing" class="text-gray-600 hover:text-blue-600 transition">Pricing</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-white-900 font-semibold mb-3 sm:mb-4 text-sm uppercase">LEGAL</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Terms of services</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Privacy policy</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1 mt-6 sm:mt-0">
+                        <h3 class="text-white-900 font-semibold mb-3 sm:mb-4 text-sm uppercase">MORE</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Newsletter for makers</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Sign In</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Sign Up</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pt-6 sm:pt-8 flex flex-col md:flex-row items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <img src="{% static 'images/tars.jpeg' %}" alt="Creator" class="h-8 w-8 sm:h-10 sm:w-10 rounded-full mr-3">
+                    <div>
+                        <p class="text-white-800 text-sm sm:text-base">Hey Curious 👋 I'm <span class="font-medium">Tars</span>, the creator of MailTune. You can follow my work on <a href="https://x.com/tars4mars" class="text-violet-600 hover:underline">Twitter</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Add smooth scrolling to all links
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a[href^="#"]');
+            
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Only prevent default if the link has a hash and it's not just "#"
+                    if(this.getAttribute('href') !== '#' && this.hash) {
+                        e.preventDefault();
+                        
+                        const targetId = this.hash.substring(1);
+                        const targetElement = document.getElementById(targetId);
+                        
+                        if(targetElement) {
+                            // Smooth scroll to the target with animation
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 80, // Offset for fixed header
+                                behavior: 'smooth'
+                            });
+                            
+                            // Update URL without refreshing
+                            history.pushState(null, null, this.hash);
+                            
+                            // Close mobile menu if it's open
+                            const mobileMenu = document.getElementById('mobile-menu');
+                            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                                mobileMenu.classList.add('hidden');
+                            }
+                        }
+                    }
+                });
+            });
+            
+            // Mobile menu toggle
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (menuButton && mobileMenu) {
+                menuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Tone selector functionality
+            const toneSelector = document.getElementById('tone-selector');
+            if (toneSelector) {
+                toneSelector.addEventListener('change', function() {
+                    // Hide all tone messages
+                    document.getElementById('professional-tone').classList.add('hidden');
+                    document.getElementById('friendly-tone').classList.add('hidden');
+                    document.getElementById('polite-tone').classList.add('hidden');
+                    
+                    // Show the selected tone message
+                    const selectedTone = this.value;
+                    document.getElementById(selectedTone + '-tone').classList.remove('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

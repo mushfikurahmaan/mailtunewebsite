@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if original_view == 'dashboard_page' %}
+    <title>Dashboard - Mail Tune</title>
+    {% elif original_view == 'checkout_page' %}
+    <title>Checkout - Mail Tune</title>
+    {% else %}
+    <title>Authenticating - Mail Tune</title>
+    {% endif %}
+    <link rel="icon" href="{% static 'images/icon-16px.png' %}" type="image/png" sizes="16x16">
+    <link rel="icon" href="{% static 'images/icon-32px.png' %}" type="image/png" sizes="32x32">
+    <link rel="stylesheet" href="{% static 'css/dist/output.css' %}">
+    
+    <!-- Supabase JS Client - Make it available globally -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Make sure supabase is defined globally
+        window.supabase = supabase;
+    </script>
+    <style>
+        .auth-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #000000;
+            z-index: 9999;
+        }
+        
+        .auth-spinner {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            border-top: 2px solid #A15DF8;
+            border-bottom: 2px solid #A15DF8;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth loading overlay -->
+    <div id="auth-loader" class="auth-loader">
+        <div class="auth-spinner"></div>
+    </div>
+    
+    <!-- Include the content of the original template -->
+    {% include original_template %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if token exists in localStorage
+            const token = localStorage.getItem('mailtune_token');
+            const userData = JSON.parse(localStorage.getItem('mailtune_user') || '{}');
+            
+            if (!token || !userData) {
+                // Not authenticated, redirect to login page
+                console.log('User not authenticated, redirecting to login');
+                window.location.href = "{{ redirect_url }}";
+            } else {
+                // Authenticated, show the content and hide the loader
+                console.log('User authenticated, showing content');
+                document.getElementById('auth-loader').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

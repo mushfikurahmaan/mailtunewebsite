@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication - Mail Tune</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'images/icon-16px.png' %}" type="image/png" sizes="16x16">
+    <link rel="icon" href="{% static 'images/icon-32px.png' %}" type="image/png" sizes="32x32">
+    <link rel="stylesheet" href="{% static 'css/dist/output.css' %}">
+    <!-- Supabase JS Client - Make it available globally -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Make sure supabase is defined globally before loading auth.js
+        window.supabase = supabase;
+    </script>
+    <!-- Include auth.js for authentication functionality -->
+    <script src="{% static 'js/auth.js' %}"></script>
+</head>
+<body class="bg-black text-white">
+    <div class="min-h-screen flex flex-col justify-center items-center p-4">
+        <div class="w-full max-w-md bg-black border border-gray-800 rounded-lg p-6 text-center">
+            <img src="{% static 'images/icon-32px.png' %}" alt="Mail Tune Logo" class="h-12 w-12 mb-4 mx-auto">
+            <h1 class="text-2xl font-bold mb-4">Authentication</h1>
+            <p id="auth-message" class="text-primary">Processing authentication...</p>
+            <div class="mt-6 inline-block">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail Tune Dashboard</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'images/icon-16px.png' %}" type="image/png" sizes="16x16">
+    <link rel="icon" href="{% static 'images/icon-32px.png' %}" type="image/png" sizes="32x32">
+    <link rel="stylesheet" href="{% static 'css/dist/output.css' %}">
+    <!-- Supabase JS Client - Make it available globally -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Make sure supabase is defined globally
+        window.supabase = supabase;
+    </script>
+    <!-- Include dashboard.js for user data handling -->
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</head>
+<body class="bg-black text-white">
+    <div class="h-screen overflow-hidden flex flex-col">
+        <!-- Header -->
+        <header class="bg-black py-3 px-5 flex justify-between items-center border-b border-gray-800">
+            <div class="flex items-center gap-3">
+                <a href="{% url 'home' %}"><img src="{% static 'images/icon-32px.png' %}" alt="Mail Tune" class="w-7 h-7"></a>
+                <h1 id="user-greeting" class="text-xl font-bold">Good day!</h1>
+            </div>
+            <div class="flex items-center">
+                <img id="profile-pic" src="https://ui-avatars.com/api/?name=User&background=A15DF8&color=fff" alt="Profile" class="w-8 h-8 rounded-full">
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-5 overflow-auto flex-1">
+            <!-- Top Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
+                <div class="bg-black rounded-lg border border-gray-800 p-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="p-2 rounded-lg bg-primary bg-opacity-20">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div id="total-emails" class="text-2xl font-bold">0</div>
+                    <div class="text-sm text-gray-400">Total emails converted</div>
+                </div>
+
+                <div class="bg-black rounded-lg border border-gray-800 p-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="p-2 rounded-lg bg-primary bg-opacity-20">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div id="words-used" class="text-2xl font-bold">0</div>
+                    <div class="text-sm text-gray-400">Words used this month</div>
+                </div>
+
+                <div class="bg-black rounded-lg border border-gray-800 p-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="p-2 rounded-lg bg-primary bg-opacity-20">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div id="current-subscription" class="text-2xl font-bold">Free</div>
+                    <div class="text-sm text-gray-400">Current subscription</div>
+                </div>
+            </div>
+
+            <!-- Middle Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5">
+                <!-- Usage Overview -->
+                <div class="bg-black rounded-lg border border-gray-800 p-5 lg:col-span-2">
+                    <h2 class="text-lg font-semibold mb-4">Usage Overview</h2>
+                    
+                    <!-- Words usage -->
+                    <div class="mb-5">
+                        <div class="flex justify-between mb-1.5">
+                            <span class="text-sm font-medium">Words used</span>
+                            <span id="words-counter" class="text-sm text-gray-400">0 / 0</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2">
+                            <div id="words-progress" class="bg-primary h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between mt-1.5">
+                            <span id="renewal-date" class="text-xs text-gray-400">Renews in 0 days</span>
+                            <span class="words-limit-label text-xs text-gray-400">Monthly limit of 0 words</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Emails usage -->
+                    <div>
+                        <div class="flex justify-between mb-1.5">
+                            <span class="text-sm font-medium">Emails converted</span>
+                            <span id="emails-counter" class="text-sm text-gray-400">0 / 0</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2">
+                            <div id="emails-progress" class="bg-primary h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-end mt-1.5">
+                            <span class="emails-limit-label text-xs text-gray-400">Monthly limit of 0 emails</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right panel -->
+                <div class="bg-black text-white rounded-lg border border-primary p-5">
+                    <h2 class="text-lg font-semibold mb-3">Current Plan</h2>
+                    <div id="plan-info" class="bg-primary bg-opacity-20 p-3 rounded-lg mb-3">
+                        <div class="flex items-center mb-1">
+                            <svg class="w-4 h-4 text-primary mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="font-medium">Free</span>
+                        </div>
+                        <p class="text-sm text-gray-300">Free forever</p>
+                    </div>
+                    <a id="upgrade-button" href="/accounts/checkout/" class="w-full py-2 bg-primary text-white rounded-lg font-medium hover:bg-opacity-90 transition block text-center">Upgrade to Starter</a>
+                    <a href="/accounts/manage/" class="mt-2 text-sm text-center block text-primary hover:underline">Manage billing</a>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-700">
+                        <h3 class="font-medium mb-2 text-sm">Next billing date</h3>
+                        <p id="next-billing-date" class="text-sm text-gray-300">-</p>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Extension Download & Recent Activity -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+                <!-- Extension Download -->
+                <div class="bg-black rounded-lg border border-gray-800 p-5">
+                    <h2 class="text-lg font-semibold mb-3">Extension Setup</h2>
+                    <p class="text-sm text-gray-400 mb-3">Install our browser extension to transform email tunes directly in your inbox.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="#" class="flex items-center py-1.5 px-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition">
+                            <img src="{% static 'images/chrome.png' %}" class="w-4 h-4 mr-2" alt="Chrome logo">
+                            Chrome
+                        </a>
+                        <a href="#" class="flex items-center py-1.5 px-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition">
+                            <img src="{% static 'images/firefox.png' %}" class="w-4 h-4 mr-2" alt="Firefox logo">
+                            Firefox
+                        </a>
+                        <a href="#" class="flex items-center py-1.5 px-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition">
+                            <img src="{% static 'images/brave.png' %}" class="w-4 h-4 mr-2" alt="Brave logo">
+                            Brave
+                        </a>
+                        <a href="#" class="flex items-center py-1.5 px-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition">
+                            <img src="{% static 'images/safari.png' %}" class="w-4 h-4 mr-2" alt="Safari logo">
+                            Safari
+                        </a>
+                    </div>
+                    <a href="#" class="mt-3 text-sm text-primary hover:underline block">View setup tutorial →</a>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-black rounded-lg border border-gray-800 p-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-lg font-semibold">Recent Activity</h2>
+                        <a href="#" class="text-xs text-primary hover:underline">View all</a>
+                    </div>
+                    <div id="recent-activity-container" class="space-y-3">
+                        <!-- Activity items will be populated dynamically -->
+                        <div class="text-center text-gray-400 text-sm py-4">No recent activity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Settings -->
+            <div class="bg-black rounded-lg border border-gray-800 p-5">
+                <h2 class="text-lg font-semibold mb-4">Account Settings</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-white mb-1">Full Name</label>
+                        <div class="flex items-center w-full px-3 py-2 bg-gray-900 border border-gray-800 text-white rounded-lg opacity-80">
+                            <span id="user-fullname">User</span>
+                            <span class="ml-auto text-xs text-gray-500">Read only</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-white mb-1">Email Address</label>
+                        <div class="flex items-center w-full px-3 py-2 bg-gray-900 border border-gray-800 text-white rounded-lg opacity-80">
+                            <span id="user-email">user@example.com</span>
+                            <span class="ml-auto text-xs text-gray-500">Read only</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-4">
+                    <button id="logout-button" class="py-1.5 px-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition">Log Out</button>
+                    <button class="py-1.5 px-4 text-red-400 hover:text-red-300 transition">Delete Account</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html> 
