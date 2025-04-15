@@ -9,15 +9,81 @@ Mail Tune is a browser extension that uses AI to rewrite emails in different ton
 - **Freemium Model**: Free tier with limited usage, paid tiers for more transformations
 - **Social Login**: Authentication via Google, Facebook, and other providers
 - **Usage Tracking**: Track number of transformations without storing email content
+- **Context Awareness**: Adapt tone based on email context and intent
+- **Adjustable Intensity**: Control the level of tone transformation needed
 
-## ⚙️ Tech Stack
+## 📁 Project Structure
 
-- **Backend**: Django, Django REST Framework
-- **Authentication**: Supabase JWT
-- **Database**: PostgreSQL (via Supabase)
-- **AI Service**: OpenAI API
-- **Frontend**: TailwindCSS
-- **Caching**: Redis (optional)
+```
+mail_tune_project/
+├── accounts/                 # User authentication and profile management
+│   ├── decorators.py         # Custom auth decorators
+│   ├── middleware.py         # Supabase JWT auth middleware
+│   ├── models.py             # UserProfile, Subscription, UsageLog models
+│   ├── urls.py               # Account-related URLs
+│   └── views.py              # Auth and profile views
+├── ai_service/               # AI integration services
+│   ├── services.py           # OpenAI API integration for email transformation
+│   └── models.py             # AI service models
+├── api/                      # REST API endpoints
+│   ├── urls.py               # API endpoint routes
+│   └── views.py              # API views for email transformation
+├── mail_tune_project/        # Project configuration
+│   ├── settings.py           # Django settings
+│   ├── urls.py               # Main URL routing
+│   ├── asgi.py               # ASGI configuration
+│   └── wsgi.py               # WSGI configuration
+├── static/                   # Static files (CSS, JS, etc.)
+│   ├── css/                  # Stylesheets
+│   │   ├── src/              # Source CSS files
+│   │   └── dist/             # Compiled CSS files
+│   └── js/                   # JavaScript files
+├── templates/                # HTML templates
+│   ├── accounts/             # Account-related templates
+│   ├── registration/         # Registration templates
+│   └── home.html             # Main application template
+├── manage.py                 # Django management script
+├── requirements.txt          # Python dependencies
+├── package.json              # Node.js dependencies
+├── tailwind.config.js        # Tailwind CSS configuration
+└── postcss.config.js         # PostCSS configuration
+```
+
+## ⚙️ Technology Stack
+
+### Backend
+- **Framework**: Django 5.x with Django REST Framework
+- **Authentication**: Supabase JWT for secure token-based auth
+- **Database**: 
+  - Development: SQLite
+  - Production: PostgreSQL (via Supabase)
+- **Caching**: Redis for performance optimization
+- **AI Integration**: OpenAI GPT-4 API
+
+### Frontend
+- **Styling**: TailwindCSS for responsive design
+- **Build System**: PostCSS for processing CSS
+- **JavaScript**: Vanilla JS for browser extension
+
+### Infrastructure
+- **Deployment**: Configurable for various hosting providers
+- **Static Files**: Configured with whitenoise for production
+- **Security**: CSRF protection, secure cookies, HTTPS enforcement
+
+## 💾 Data Models
+
+### UserProfile
+- Tracks user authentication data
+- Stores subscription tier and usage statistics
+- GDPR compliant with minimal personal data retention
+
+### Subscription
+- Manages paid subscription details
+- Tracks subscription status, renewal dates, and payment information
+
+### UsageLog
+- Records transformation usage without storing email content
+- Tracks word count and tone selection for analytics
 
 ## 🚀 Installation
 
@@ -65,28 +131,32 @@ Mail Tune is a browser extension that uses AI to rewrite emails in different ton
 
 ## 📊 Usage Tiers
 
-- **Free**: 10 email transformations per month
-- **Starter**: 100 transformations per month ($9/month)
-- **Premium**: 500 transformations per month ($19/month)
-- **Business**: 1500 transformations per month ($49/month)
+The application supports multiple subscription tiers with different usage limits:
 
-## 🔐 Data Privacy & GDPR Compliance
+| Tier | Email Transforms | Word Limit | Price |
+|------|------------------|------------|-------|
+| Free | 5 (lifetime) | 1,000 | $0 |
+| Starter | 100/month | 10,000/month | $9/month |
+| Premium | 500/month | 50,000/month | $19/month |
+| Business | 1,500/month | 600,000/month | $49/month |
 
-We take privacy seriously. Email content is never stored on our servers. Only the following metadata is stored:
+## 🔐 Authentication Flow
 
-- User ID
-- Auth provider (e.g., Google)
-- Number of emails transformed
-- Usage timestamps
-- Subscription status
-- Billing cycle
+1. User authenticates through the frontend using Supabase auth providers
+2. Supabase issues a JWT token upon successful authentication
+3. Backend validates the JWT token via the SupabaseJWTMiddleware
+4. UserProfile is created or retrieved based on the authenticated user ID
+5. All API requests include the JWT token for authentication
 
-## 🧠 API Usage
+## 🔧 API Endpoints
 
-Example request:
-
-```json
+### Transform Email
+```
 POST /api/transform-email/
+```
+
+Request:
+```json
 {
   "user_inputed_original_email": "Can we move the meeting?",
   "tone": "Professional",
@@ -97,8 +167,7 @@ POST /api/transform-email/
 }
 ```
 
-Example response:
-
+Response:
 ```json
 {
   "transformed_text": "Would it be possible to reschedule our meeting at your convenience?",
@@ -106,77 +175,81 @@ Example response:
 }
 ```
 
-## 📱 Browser Extension
-
-The browser extension is available for:
-- Chrome
-- Brave
-- Firefox
-
-Users must be logged into their Mail Tune account to use the extension.
-
-## 🔧 Development Workflow
-
-### Frontend Development
-
-This project uses Tailwind CSS for styling:
-
-1. For development with auto-rebuild:
-```bash
-npm run watch:css
+### Get Usage Statistics
+```
+GET /api/get-user-usage/
 ```
 
-2. This will compile the Tailwind CSS source files from `static/css/src/input.css` to `static/css/dist/output.css`.
-
-3. To modify the Tailwind configuration, edit the `tailwind.config.js` file.
-
-### Backend Development
-
-1. Create a new branch for each feature:
-```bash
-git checkout -b feature/your-feature-name
+Response:
+```json
+{
+  "subscription_tier": "STARTER",
+  "total_emails_transformed": 25,
+  "total_words_transformed": 2500,
+  "email_limit": 100,
+  "words_limit": 10000,
+  "renewal_date": "June 15, 2023",
+  "days_until_renewal": 7
+}
 ```
 
-2. Run the tests before committing:
+## 🔒 GDPR Compliance Architecture
+
+The application is designed with privacy by design principles:
+
+1. **No Email Storage**: Email content is never stored on servers
+2. **Minimal Data Collection**: Only usage metadata is retained
+3. **Secure Processing**: All transformations happen in-memory
+4. **Encryption**: All API calls use HTTPS
+5. **User Control**: Users can delete their accounts and data
+6. **Transparent Processing**: Clear documentation on data handling
+
+## 🧪 Testing & Development
+
+### Running Tests
 ```bash
 python manage.py test
 ```
 
-3. Format your code with Black:
+### Frontend Development
 ```bash
+# Watch for CSS changes
+npm run watch:css
+```
+
+### Backend Development
+```bash
+# Create a new branch for features
+git checkout -b feature/your-feature-name
+
+# Format code before committing
 black .
 ```
 
-## 🛠️ Troubleshooting
+## 🚢 Deployment
 
-### Common Issues
-
-1. **TemplateDoesNotExist Error**
-   - Make sure template files are in the correct location
-   - Check that template paths in views match the actual file names
-   - The custom auth decorator converts view names to template paths
-
-2. **Authentication Issues**
-   - Check if localStorage has valid mailtune_token and mailtune_user values
-   - Verify Supabase connection settings
-
-3. **Static Files Not Loading**
-   - Run `python manage.py collectstatic`
-   - Check that STATIC_URL and STATIC_ROOT are configured properly
-
-### Deployment Checklist
-
-- [ ] Set DEBUG=False in production
-- [ ] Configure proper ALLOWED_HOSTS
-- [ ] Set up HTTPS with proper SSL certificates
-- [ ] Collect static files
-- [ ] Set up a production database
-- [ ] Configure CSRF and session security settings
+### Production Checklist
+- [ ] Set `DEBUG=False` in settings
+- [ ] Configure proper `ALLOWED_HOSTS`
+- [ ] Set up HTTPS with valid SSL certificates
+- [ ] Run `python manage.py collectstatic`
+- [ ] Configure production database (PostgreSQL recommended)
+- [ ] Set up proper Redis cache for production
+- [ ] Update `SECRET_KEY` to a strong random value
+- [ ] Configure proper email settings for notifications
+- [ ] Set up monitoring and error tracking
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
