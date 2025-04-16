@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import json
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from .models import UserProfile, Subscription
 from .decorators import login_required
 
@@ -86,7 +86,7 @@ def register_user(request):
             'sub': user_id,
             'email': email,
             'name': name,  # Add name to token payload
-            'exp': datetime.utcnow() + timedelta(days=30)
+            'exp': datetime.now(UTC) + timedelta(days=30)
         }
         
         token = jwt.encode(
@@ -199,14 +199,49 @@ def update_subscription(request):
 
 def get_remaining_transforms(user_profile):
     """
-    Calculate remaining transforms based on user tier and usage
+    Calculate remaining transforms based on user tier, usage, and billing period
+    
+    For FREE tier: Limited by lifetime usage
+    For paid tiers: Limited by monthly usage within current billing period
     """
     tier_limits = settings.USER_TIERS.get(user_profile.subscription_tier, {'emails': 0})
     email_limit = tier_limits.get('emails', 0)
     
     if user_profile.subscription_tier == 'FREE':
+        # For free tier: simple lifetime limit
         return max(0, email_limit - user_profile.total_emails_transformed)
     else:
-        # For paid tiers, we would calculate based on current billing period
-        # This is a simplified version - in production, would calculate monthly usage
-        return email_limit
+        try:
+            # For paid tiers: check against current billing period
+            subscription = Subscription.objects.get(user_profile=user_profile, is_active=True)
+            
+            # Get current billing period
+            today = timezone.now()
+            
+            # Find the billing start date for the current period
+            # If subscription started this month, use that date
+            # Otherwise, use the 1st day of current month
+            if subscription.start_date.month == today.month and subscription.start_date.year == today.year:
+                period_start = subscription.start_date
+            else:
+                period_start = datetime.datetime(today.year, today.month, 1, tzinfo=today.tzinfo)
+            
+            # Count emails transformed in current billing period
+            monthly_emails_count = UsageLog.objects.filter(
+                user_profile=user_profile,
+                timestamp__gte=period_start
+            ).count()
+            
+            # Calculate remaining transforms for current billing period
+            return max(0, email_limit - monthly_emails_count)
+            
+        except Subscription.DoesNotExist:
+            # Handle case where there's no active subscription
+            # This is an edge case - log it and default to 0 remaining
+            logger.error(f"User {user_profile.email} has tier {user_profile.subscription_tier} but no active subscription")
+            return 0
+        except Exception as e:
+            # Log any other errors but don't break the application
+            logger.error(f"Error calculating transforms for {user_profile.email}: {str(e)}")
+            # Return 0 as a safe default
+            return 0
