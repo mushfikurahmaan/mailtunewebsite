@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.utils import timezone
+import logging
+
+logger = logging.getLogger(__name__)
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -9,7 +13,7 @@ from rest_framework import status
 import json
 import jwt
 from datetime import datetime, timedelta, UTC
-from .models import UserProfile, Subscription
+from .models import UserProfile, Subscription, UsageLog
 from .decorators import login_required
 
 def signup_page(request):
