@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views_auth import supabase_config
 
 app_name = 'accounts'
 
@@ -16,4 +17,5 @@ urlpatterns = [
     path('register/', views.register_user, name='register_user'),
     path('profile/', views.get_user_profile, name='get_user_profile'),
     path('subscribe/', views.update_subscription, name='update_subscription'),
+    path('supabase-config/', supabase_config, name='supabase_config'),
 ] 

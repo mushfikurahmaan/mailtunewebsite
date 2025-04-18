@@ -8,3 +8,4 @@ gunicorn==21.2.0
 whitenoise==6.6.0
 django-cors-headers==4.3.1
 PyJWT==2.8.0
+dj-database-url==2.1.0

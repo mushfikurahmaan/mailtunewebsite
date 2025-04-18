@@ -5,11 +5,36 @@ if (next) {
     localStorage.setItem('next_path', next);
 }
 
-// Initialize Supabase client
-const supabaseUrl = 'https://mblbjlnakohvcwbxnghu.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ibGJqbG5ha29odmN3YnhuZ2h1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ1OTg5OTgsImV4cCI6MjA2MDE3NDk5OH0.P9AYR9nr5dA7NPJscGliPT4Ygs69AAHVNrB1a4R2dOw';
-// Use the global Supabase client provided by the HTML page
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+// Initialize Supabase client - will be properly initialized after fetching config
+let supabaseClient;
+
+// Fetch Supabase configuration from the server
+async function initializeSupabase() {
+    try {
+        const response = await fetch('/accounts/supabase-config/');
+        if (!response.ok) {
+            throw new Error('Failed to load Supabase configuration');
+        }
+        
+        const config = await response.json();
+        
+        // Initialize the Supabase client with the fetched credentials
+        supabaseClient = window.supabase.createClient(config.url, config.key);
+        
+        // If we're on the auth-callback page, check authentication immediately
+        if (window.location.pathname.includes('/auth-callback/')) {
+            checkAuthentication();
+        }
+    } catch (error) {
+        console.error('Error initializing Supabase:', error);
+        const messageEl = document.getElementById('auth-message');
+        if (messageEl) {
+            messageEl.textContent = 'Error loading authentication. Please try again.';
+            messageEl.classList.remove('hidden');
+            messageEl.style.color = 'red';
+        }
+    }
+}
 
 // Function to handle successful signup and redirect
 async function handleSignupSuccess(user) {
@@ -96,6 +121,10 @@ async function handleSignupSuccess(user) {
 // Function to handle signup with different providers (Google, Facebook, Twitter/X)
 async function signupWithProvider(provider) {
     try {
+        if (!supabaseClient) {
+            await initializeSupabase();
+        }
+        
         // Make sure the auth-message element is visible
         const messageEl = document.getElementById('auth-message');
         if (messageEl) {
@@ -129,32 +158,38 @@ async function signupWithProvider(provider) {
 }
 
 // Check if user is already authenticated when returning from OAuth redirect
-document.addEventListener('DOMContentLoaded', async () => {
-    // Get the current page path
-    const currentPath = window.location.pathname;
-    
-    // Only proceed with auth check if on the auth-callback page
-    // This prevents automatic redirection on sign-in/sign-up pages
-    if (currentPath.includes('/auth-callback/')) {
-        try {
-            const { data: { session }, error } = await supabaseClient.auth.getSession();
-            
-            if (error) throw error;
-            
-            if (session) {
-                console.log('User is already authenticated:', session.user);
-                // Make sure the auth-message element is visible
-                const messageEl = document.getElementById('auth-message');
-                if (messageEl) {
-                    messageEl.textContent = 'Successfully authenticated! Processing...';
-                    messageEl.classList.remove('hidden');
-                    messageEl.style.color = '#A15DF8'; // Set text color to primary color
-                }
-                
-                handleSignupSuccess(session.user);
-            }
-        } catch (error) {
-            console.error('Error checking authentication status:', error);
+async function checkAuthentication() {
+    try {
+        if (!supabaseClient) {
+            await initializeSupabase();
+            return; // The init function will call this again after initializing
         }
+        
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (session) {
+            console.log('User is already authenticated:', session.user);
+            // Make sure the auth-message element is visible
+            const messageEl = document.getElementById('auth-message');
+            if (messageEl) {
+                messageEl.textContent = 'Successfully authenticated! Processing...';
+                messageEl.classList.remove('hidden');
+                messageEl.style.color = '#A15DF8'; // Set text color to primary color
+            }
+            
+            handleSignupSuccess(session.user);
+        }
+    } catch (error) {
+        console.error('Error checking authentication status:', error);
     }
+}
+
+// Initialize the app when DOM content is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Supabase
+    initializeSupabase();
+    
+    // The auth check for callback page is now handled in initializeSupabase
 }); 
