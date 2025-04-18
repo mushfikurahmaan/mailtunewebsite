@@ -39,8 +39,6 @@ yarn-debug.log
 yarn-error.log
 .pnpm-debug.log
 
-# Frontend build
-staticfiles/
 
 # IDE / Editors
 .idea/

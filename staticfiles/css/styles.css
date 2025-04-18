@@ -1,0 +1,99 @@
+/* Import Satoshi font */
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@1,2&display=swap');
+
+body {
+    font-family: 'Satoshi', sans-serif;
+    background-color: #000000;
+    color: white;
+    scroll-behavior: smooth;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #A15DF8;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #8a4fd3;
+}
+
+/* Custom styles for the dashboard */
+.shadow-sm {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.transition {
+    transition: all 0.2s ease;
+}
+
+/* Focus styles for inputs */
+input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(161, 93, 248, 0.3);
+    border-color: #A15DF8;
+}
+
+/* Custom border styles */
+.border-primary {
+    border-color: #A15DF8;
+}
+
+.border-gray-800 {
+    border-color: #2d2d2d;
+}
+
+/* Button hover effects */
+button.bg-primary:hover, 
+a.bg-primary:hover {
+    background-color: #9048e0;
+}
+
+/* Custom hover effects for links */
+a.text-primary:hover {
+    color: #b77ff9;
+}
+
+/* Custom text colors */
+.text-primary {
+    color: #A15DF8;
+}
+
+/* Hero text styling */
+.hero-text {
+    font-size: 40px;
+}
+
+/* 3D rotation effect */
+.rotate-3d {
+    transform: perspective(1000px) rotateX(5deg) rotateY(-5deg);
+    transition: transform 0.5s ease;
+}
+
+.rotate-3d:hover {
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+}
+
+/* Blob shape animation */
+.blob-shape {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    animation: blob-animation 8s ease-in-out infinite;
+}
+
+@keyframes blob-animation {
+    0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+} 
