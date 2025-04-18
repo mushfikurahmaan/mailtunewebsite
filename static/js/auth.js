@@ -133,11 +133,21 @@ async function signupWithProvider(provider) {
             messageEl.style.color = '#A15DF8'; // Set text color to primary color
         }
         
+        // Determine the correct redirect URL based on the environment
+        const productionDomain = 'https://mail-tune.onrender.com';
+        const currentDomain = window.location.origin;
+        const isProduction = currentDomain.includes('render.com');
+        
+        // Use production URL if on Render, otherwise use current origin (for local development)
+        const redirectUrl = isProduction 
+            ? `${productionDomain}/accounts/auth-callback/`
+            : `${currentDomain}/accounts/auth-callback/`;
+        
         // Sign up with the selected provider
         const { data, error } = await supabaseClient.auth.signInWithOAuth({
             provider: provider,
             options: {
-                redirectTo: window.location.origin + '/accounts/auth-callback/'
+                redirectTo: redirectUrl
             }
         });
 
