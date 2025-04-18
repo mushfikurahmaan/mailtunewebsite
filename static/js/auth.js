@@ -7,6 +7,7 @@ if (next) {
 
 // Initialize Supabase client - will be properly initialized after fetching config
 let supabaseClient;
+let domainConfig;
 
 // Fetch Supabase configuration from the server
 async function initializeSupabase() {
@@ -20,6 +21,12 @@ async function initializeSupabase() {
         
         // Initialize the Supabase client with the fetched credentials
         supabaseClient = window.supabase.createClient(config.url, config.key);
+        
+        // Also fetch domain configuration
+        const domainResponse = await fetch('/accounts/domain-config/');
+        if (domainResponse.ok) {
+            domainConfig = await domainResponse.json();
+        }
         
         // If we're on the auth-callback page, check authentication immediately
         if (window.location.pathname.includes('/auth-callback/')) {
@@ -133,15 +140,17 @@ async function signupWithProvider(provider) {
             messageEl.style.color = '#A15DF8'; // Set text color to primary color
         }
         
-        // Determine the correct redirect URL based on the environment
-        const productionDomain = 'https://mail-tune.onrender.com';
-        const currentDomain = window.location.origin;
-        const isProduction = currentDomain.includes('render.com');
+        // Determine the correct redirect URL based on the domain config
+        let redirectUrl;
         
-        // Use production URL if on Render, otherwise use current origin (for local development)
-        const redirectUrl = isProduction 
-            ? `${productionDomain}/accounts/auth-callback/`
-            : `${currentDomain}/accounts/auth-callback/`;
+        if (domainConfig && domainConfig.auth_callback_url) {
+            // Use the domain config from our backend
+            redirectUrl = domainConfig.auth_callback_url;
+        } else {
+            // Fallback to the previous behavior if domain config is not available
+            const currentDomain = window.location.origin;
+            redirectUrl = `${currentDomain}/accounts/auth-callback/`;
+        }
         
         // Sign up with the selected provider
         const { data, error } = await supabaseClient.auth.signInWithOAuth({

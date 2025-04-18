@@ -13,4 +13,15 @@ def supabase_config(request):
     return JsonResponse({
         'url': settings.SUPABASE_URL,
         'key': settings.SUPABASE_KEY
+    })
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def domain_config(request):
+    """
+    Serve domain configuration from environment variables.
+    This endpoint provides the production domain for frontend scripts.
+    """
+    return JsonResponse({
+        'production_domain': settings.PRODUCTION_DOMAIN
     }) 

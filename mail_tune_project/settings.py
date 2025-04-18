@@ -68,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'mail_tune_project.context_processors.settings_context',
             ],
         },
     },
@@ -148,6 +149,9 @@ CORS_ALLOWED_ORIGINS = [
     "https://*.render.com",
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+# Production domain for frontend redirects
+PRODUCTION_DOMAIN = os.environ.get('PRODUCTION_DOMAIN', 'http://localhost:8000')
 
 # Supabase settings for user authentication
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'your-supabase-url')
