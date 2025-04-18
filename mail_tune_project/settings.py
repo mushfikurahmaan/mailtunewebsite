@@ -180,7 +180,8 @@ REST_FRAMEWORK = {
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
-    "https://yourdomain.com",
+    "https://mail-tune.onrender.com",
+    "https://*.render.com",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
