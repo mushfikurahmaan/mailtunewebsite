@@ -25,6 +25,9 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('accounts/', include('accounts.urls')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('terms/', TemplateView.as_view(template_name='terms.html'), name='terms'),
+    path('privacy/', TemplateView.as_view(template_name='privacy.html'), name='privacy'),
+    path('refund/', TemplateView.as_view(template_name='refund.html'), name='refund'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

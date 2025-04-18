@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refund Policy - Mail Tune</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'images/icon-16px.png' %}" type="image/png" sizes="16x16">
+    <link rel="icon" href="{% static 'images/icon-32px.png' %}" type="image/png" sizes="32x32">
+    <link rel="stylesheet" href="{% static 'css/dist/output.css' %}">
+    <!-- Import Inter font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#A15DF8',
+                        black: '#000000',
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Include home.js for auth check -->
+    <script src="{% static 'js/home.js' %}"></script>
+</head>
+<body class="bg-black text-white font-inter">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 backdrop-blur-lg bg-black bg-opacity-80 border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <img src="{% static 'images/icon-32px.png' %}" alt="Mail Tune Logo" class="h-8 w-8 mr-2">
+                    <span class="font-bold text-xl">Mail Tune</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/#what-is-it" class="text-gray-300 hover:text-white transition">What is it</a>
+                    <a href="/#how-it-works" class="text-gray-300 hover:text-white transition">How it works</a>
+                    <a href="/#examples" class="text-gray-300 hover:text-white transition">Examples</a>
+                    <a href="/#pricing" class="text-gray-300 hover:text-white transition">Pricing</a>
+                    <a href="/#testimonials" class="text-gray-300 hover:text-white transition">Testimonials</a>
+                </div>
+                <div class="flex items-center space-x-4 navbar-end">
+                    <a href="{% url 'accounts:signup_page' %}" data-plan-type="FREE" class="signup-cta bg-primary hover:bg-opacity-80 text-white px-4 py-2 rounded-lg transition pricing-button" onclick="if (localStorage.getItem('mailtune_token')) { window.location.href='/accounts/dashboard/'; return false; }">Fix tone now</a>
+                    <!-- Mobile menu button -->
+                    <button id="mobile-menu-button" class="md:hidden text-gray-300 hover:text-white focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile menu, show/hide based on menu state -->
+            <div id="mobile-menu" class="md:hidden hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 border-t border-gray-700 mt-2">
+                    <a href="/#what-is-it" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">What is it</a>
+                    <a href="/#how-it-works" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">How it works</a>
+                    <a href="/#examples" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">Examples</a>
+                    <a href="/#pricing" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">Pricing</a>
+                    <a href="/#testimonials" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition">Testimonials</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Refund Policy Section -->
+    <section class="pt-40 pb-16 relative">
+        <!-- Decorative elements -->
+        <div class="absolute top-20 left-1/4 w-64 h-64 bg-primary opacity-10 rounded-full filter blur-3xl"></div>
+        <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-primary opacity-10 rounded-full filter blur-3xl"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-8 text-center">Refund Policy</h1>
+            <div class="bg-transparent border border-gray-800 rounded-2xl p-6 sm:p-8 mb-8">
+                <p class="text-gray-300 mb-6">Last Updated: June 15, 2023</p>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">1. Overview</h2>
+                        <p class="text-gray-300 mb-3">
+                            At Mail Tune, this Refund Policy outlines our guidelines for cancellations of subscriptions to the Mail Tune service. Please note that we do not provide money-back refunds for subscriptions.
+                        </p>
+                        <p class="text-gray-300">
+                            By subscribing to Mail Tune, you agree to the terms of this Refund Policy. If you do not agree with these terms, please do not purchase a subscription.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">2. No-Refund Policy</h2>
+                        <p class="text-gray-300 mb-3">
+                            All purchases made for Mail Tune subscriptions are final and non-refundable. We do not provide refunds for any subscription payments already processed.
+                        </p>
+                        <p class="text-gray-300 mb-3">
+                            We encourage all users to:
+                        </p>
+                        <ul class="list-disc pl-6 text-gray-300 space-y-2">
+                            <li>Try our free plan before committing to a paid subscription</li>
+                            <li>Review all features and limitations of each plan before purchasing</li>
+                            <li>Contact our support team with any questions before subscribing</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">3. Subscription Cancellations</h2>
+                        <p class="text-gray-300 mb-3">
+                            You may cancel your subscription at any time through your account settings. Upon cancellation:
+                        </p>
+                        <ul class="list-disc pl-6 text-gray-300 space-y-2">
+                            <li>Your subscription will remain active until the end of your current billing period</li>
+                            <li>You will not be charged for the next billing period</li>
+                            <li>No partial refunds will be issued for unused time in the current billing period</li>
+                            <li>You will lose access to premium features when your current billing period ends</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">4. Technical Issues</h2>
+                        <p class="text-gray-300 mb-3">
+                            If you experience technical issues with our service that substantially impact your ability to use Mail Tune, please contact our support team. We are committed to resolving any technical problems you may encounter.
+                        </p>
+                        <p class="text-gray-300">
+                            If we are unable to resolve the issue within a reasonable timeframe, we may extend your subscription period as a courtesy, depending on the circumstances.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">5. Business and Enterprise Plans</h2>
+                        <p class="text-gray-300">
+                            For Business and Enterprise plans, special terms may apply. Please contact our sales team at sales@mailtune.com to discuss your specific situation.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">6. Changes to Refund Policy</h2>
+                        <p class="text-gray-300">
+                            We reserve the right to modify this Refund Policy at any time. Any changes will be effective immediately upon posting on our website. Your continued use of our Service after such changes constitutes your acceptance of the new Refund Policy.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4">7. Contact Us</h2>
+                        <p class="text-gray-300">
+                            If you have any questions about our Refund Policy, please contact us at support@mailtune.com.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 sm:py-16 border-t border-gray-800 mt-4 sm:mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between mb-8 md:mb-12">
+                <div class="mb-8 md:mb-0">
+                    <div class="flex items-center mb-2">
+                        <img src="{% static 'images/icon-32px.png' %}" alt="Creator" class="h-8 w-8 sm:h-10 sm:w-10 rounded-full mr-3">
+                        <span class="font-bold text-xl">Mail Tune</span>
+                    </div>
+                    <p class="text-gray-600 max-w-xs">Transform your email tone with AI.</p>
+                    <p class="text-gray-500 mt-4 text-sm">Copyright © 2025 - All rights reserved</p>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 md:gap-16">
+                    <div>
+                        <h3 class="text-white-900 font-semibold mb-3 sm:mb-4 text-sm uppercase">LINKS</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Support</a></li>
+                            <li><a href="/#pricing" class="text-gray-600 hover:text-blue-600 transition">Pricing</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-white-900 font-semibold mb-3 sm:mb-4 text-sm uppercase">LEGAL</h3>
+                        <ul class="space-y-2">
+                            <li><a href="/terms" class="text-gray-600 hover:text-blue-600 transition">Terms of services</a></li>
+                            <li><a href="/privacy" class="text-gray-600 hover:text-blue-600 transition">Privacy policy</a></li>
+                            <li><a href="/refund" class="text-gray-600 hover:text-blue-600 transition">Refund policy</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1 mt-6 sm:mt-0">
+                        <h3 class="text-white-900 font-semibold mb-3 sm:mb-4 text-sm uppercase">MORE</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Sign In</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Sign Up</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pt-6 sm:pt-8 flex flex-col md:flex-row items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <img src="{% static 'images/tars.jpeg' %}" alt="Creator" class="h-8 w-8 sm:h-10 sm:w-10 rounded-full mr-3">
+                    <div>
+                        <p class="text-white-800 text-sm sm:text-base">Hey Curious 👋 I'm <span class="font-medium">Tars</span>, the creator of MailTune. You can follow my work on <a href="https://x.com/tars4mars" target="_blank" class="text-violet-600 hover:underline">Twitter</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Add smooth scrolling to all links
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (menuButton && mobileMenu) {
+                menuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
