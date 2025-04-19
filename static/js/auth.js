@@ -69,8 +69,19 @@ async function handleSignupSuccess(user) {
             body: JSON.stringify(userData)
         });
 
+        // Check if the response is not OK, and handle error properly
         if (!response.ok) {
-            throw new Error('Failed to register user with backend');
+            // Parse the error response if possible
+            let errorMessage = 'Failed to register user with backend';
+            try {
+                const errorData = await response.json();
+                if (errorData && errorData.error) {
+                    errorMessage = errorData.error;
+                }
+            } catch (e) {
+                // If parsing fails, use the default error message
+            }
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();

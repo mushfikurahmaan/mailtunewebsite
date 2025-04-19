@@ -78,7 +78,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 });
                 
                 if (!registerResponse.ok) {
-                    throw new Error('Failed to register with backend');
+                    // Parse the error response if possible
+                    let errorMessage = 'Failed to register with backend';
+                    try {
+                        const errorData = await registerResponse.json();
+                        if (errorData && errorData.error) {
+                            errorMessage = errorData.error;
+                        }
+                    } catch (e) {
+                        // If parsing fails, use the default error message
+                    }
+                    throw new Error(errorMessage);
                 }
                 
                 const registerData = await registerResponse.json();
