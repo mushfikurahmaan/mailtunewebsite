@@ -5,6 +5,46 @@ document.addEventListener('DOMContentLoaded', async function() {
     const messageEl = document.getElementById('auth-message');
     
     try {
+        // Check for error parameters in the URL query string
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlError = urlParams.get('error');
+        const urlErrorDescription = urlParams.get('error_description');
+        
+        // Also check the URL hash fragment (Supabase sometimes puts errors there)
+        const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
+        const hashError = hashParams.get('error');
+        const hashErrorDescription = hashParams.get('error_description');
+        
+        // Use either URL query params or hash fragment params, with URL taking precedence
+        const authError = urlError || hashError;
+        const authErrorDesc = urlErrorDescription || hashErrorDescription;
+        
+        if (authError) {
+            console.error('Auth error from provider:', authError, authErrorDesc);
+            
+            // Show user-friendly error message
+            if (messageEl) {
+                let userMessage = 'Error during authentication.';
+                
+                // Customize message based on error type
+                if (authErrorDesc && authErrorDesc.includes('Database error saving new user')) {
+                    userMessage = 'This email is already registered. Try signing in instead.';
+                } else if (authError === 'server_error') {
+                    userMessage = 'Server error during authentication. Please try again later.';
+                }
+                
+                messageEl.textContent = userMessage;
+                messageEl.style.color = 'red';
+            }
+            
+            // Redirect to login page with shorter timeout
+            setTimeout(() => {
+                window.location.href = "/accounts/signin/";
+            }, 2000);
+            
+            return; // Stop processing
+        }
+        
         // Fetch configuration from the server
         const response = await fetch('/accounts/supabase-config/');
         if (!response.ok) {
