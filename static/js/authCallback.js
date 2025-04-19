@@ -19,17 +19,115 @@ document.addEventListener('DOMContentLoaded', async function() {
         const authError = urlError || hashError;
         const authErrorDesc = urlErrorDescription || hashErrorDescription;
         
-        if (authError) {
+        // Special handling for database errors when saving a new user
+        // This means the user already exists in Supabase but might not be in our backend
+        if (authError && authErrorDesc && authErrorDesc.includes('Database error saving new user')) {
+            if (messageEl) {
+                messageEl.textContent = 'Processing your authentication...';
+                messageEl.style.color = '#A15DF8';
+            }
+            
+            // Try to get a session from Supabase - the user might exist already
+            try {
+                // Initialize the Supabase client
+                const response = await fetch('/accounts/supabase-config/');
+                if (!response.ok) {
+                    throw new Error('Failed to load Supabase configuration');
+                }
+                
+                const config = await response.json();
+                supabaseClient = window.supabase.createClient(config.url, config.key);
+                
+                // Try to sign in the user with the Supabase client
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: localStorage.getItem('signup_email') || '',
+                    password: localStorage.getItem('signup_password') || ''
+                });
+                
+                if (error) {
+                    // If password auth fails, try session recovery
+                    const sessionResult = await supabaseClient.auth.getSession();
+                    if (sessionResult.error || !sessionResult.data.session) {
+                        throw new Error('Could not recover authentication session');
+                    }
+                    
+                    // We have a session, continue with registration
+                    const userMetadata = sessionResult.data.session.user.user_metadata || {};
+                    const userData = {
+                        user_id: sessionResult.data.session.user.id,
+                        email: sessionResult.data.session.user.email,
+                        auth_provider: sessionResult.data.session.user.app_metadata.provider,
+                        name: userMetadata.full_name || userMetadata.name || null,
+                        avatar_url: userMetadata.avatar_url || null
+                    };
+                    
+                    // Call our backend to register the user
+                    if (messageEl) {
+                        messageEl.textContent = 'Syncing with our system...';
+                    }
+                    
+                    const registerResponse = await fetch('/accounts/register/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userData)
+                    });
+                    
+                    if (!registerResponse.ok) {
+                        throw new Error('Failed to register user in backend');
+                    }
+                    
+                    const registerData = await registerResponse.json();
+                    
+                    // Save token and user data in localStorage
+                    localStorage.setItem('mailtune_token', registerData.token);
+                    
+                    const userToStore = {
+                        id: registerData.user.id,
+                        email: registerData.user.email,
+                        subscription_tier: registerData.user.subscription_tier || 'FREE',
+                        emails_transformed: registerData.user.emails_transformed || 0,
+                        name: userMetadata.full_name || userMetadata.name,
+                        avatar_url: userMetadata.avatar_url
+                    };
+                    
+                    localStorage.setItem('mailtune_user', JSON.stringify(userToStore));
+                    
+                    // Update message
+                    if (messageEl) {
+                        messageEl.textContent = 'Account setup successful! Redirecting...';
+                    }
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = registerData.redirect_url || '/accounts/dashboard/';
+                    }, 1000);
+                    
+                    return;
+                }
+            } catch (recoveryError) {
+                console.error('Recovery attempt failed:', recoveryError);
+                // Fallback to signin page
+                if (messageEl) {
+                    messageEl.textContent = 'Please sign in with your existing account';
+                    messageEl.style.color = 'red';
+                }
+                
+                setTimeout(() => {
+                    window.location.href = '/accounts/signin/';
+                }, 2000);
+                return;
+            }
+        } else if (authError) {
+            // Handle other auth errors
             console.error('Auth error from provider:', authError, authErrorDesc);
             
             // Show user-friendly error message
             if (messageEl) {
                 let userMessage = 'Error during authentication.';
                 
-                // Customize message based on error type
-                if (authErrorDesc && authErrorDesc.includes('Database error saving new user')) {
-                    userMessage = 'This email is already registered. Try signing in instead.';
-                } else if (authError === 'server_error') {
+                if (authError === 'server_error') {
                     userMessage = 'Server error during authentication. Please try again later.';
                 }
                 
@@ -45,16 +143,18 @@ document.addEventListener('DOMContentLoaded', async function() {
             return; // Stop processing
         }
         
-        // Fetch configuration from the server
-        const response = await fetch('/accounts/supabase-config/');
-        if (!response.ok) {
-            throw new Error('Failed to load Supabase configuration');
+        // If no errors in URL, continue with normal flow...
+        
+        // Fetch configuration from the server (if not already fetched)
+        if (!supabaseClient) {
+            const response = await fetch('/accounts/supabase-config/');
+            if (!response.ok) {
+                throw new Error('Failed to load Supabase configuration');
+            }
+            
+            const config = await response.json();
+            supabaseClient = window.supabase.createClient(config.url, config.key);
         }
-        
-        const config = await response.json();
-        
-        // Initialize the Supabase client with the fetched credentials
-        supabaseClient = window.supabase.createClient(config.url, config.key);
         
         // Check if user is already logged in with valid token
         const token = localStorage.getItem('mailtune_token');

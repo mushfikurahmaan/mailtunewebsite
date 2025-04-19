@@ -151,6 +151,12 @@ async function signupWithProvider(provider) {
             messageEl.style.color = '#A15DF8'; // Set text color to primary color
         }
         
+        // Get email from the form if it exists (for password recovery later if needed)
+        const emailInput = document.getElementById('email');
+        if (emailInput && emailInput.value) {
+            localStorage.setItem('signup_email', emailInput.value);
+        }
+        
         // Determine the correct redirect URL based on the domain config
         let redirectUrl;
         
