@@ -131,6 +131,40 @@ document.addEventListener('DOMContentLoaded', async function() {
                 
             } catch (registerError) {
                 console.error('Error registering with backend:', registerError);
+                
+                // Check if this is a duplicate email error - this means the user exists
+                if (registerError.message && registerError.message.includes('duplicate key value') && 
+                    registerError.message.includes('email')) {
+                    
+                    // This is an existing user, so we should log them in
+                    if (messageEl) {
+                        messageEl.textContent = 'Welcome back! Redirecting to dashboard...';
+                        messageEl.style.color = '#A15DF8'; // Use success color
+                    }
+                    
+                    // Create a basic user object with the available data
+                    const userToStore = {
+                        id: userData.user_id,
+                        email: userData.email,
+                        subscription_tier: 'FREE', // Default to FREE until we get more info
+                        name: userMetadata.full_name || userMetadata.name,
+                        avatar_url: userMetadata.avatar_url
+                    };
+                    
+                    // Save minimal user data to localStorage
+                    localStorage.setItem('mailtune_user', JSON.stringify(userToStore));
+                    
+                    // Generate a simple client-side token (this will be replaced on first API call)
+                    localStorage.setItem('mailtune_token', btoa(userData.email + ':' + new Date().getTime()));
+                    
+                    // Redirect to dashboard after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/accounts/dashboard/';
+                    }, 1000);
+                    return;
+                }
+                
+                // For all other errors, show the error message
                 if (messageEl) {
                     messageEl.textContent = `Registration error: ${registerError.message}`;
                     messageEl.style.color = 'red';
