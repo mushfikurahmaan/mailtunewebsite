@@ -75,16 +75,42 @@ def register_user(request):
         
         if not user_id or not email:
             return JsonResponse({'error': 'Missing required fields'}, status=400)
-            
-        # Create user profile
-        user_profile, created = UserProfile.objects.get_or_create(
-            user_id=user_id,
-            defaults={
-                'email': email,
-                'auth_provider': auth_provider
-            }
-        )
         
+        try:
+            # Try to get an existing user profile with this email first
+            existing_profile = UserProfile.objects.filter(email=email).first()
+            
+            if existing_profile:
+                # If there's a user with this email but different user_id (from auth provider)
+                # Update the user_id to match the new auth provider ID
+                if existing_profile.user_id != user_id:
+                    logger.info(f"User {email} found with different user_id, updating to match auth provider")
+                    existing_profile.user_id = user_id
+                    existing_profile.auth_provider = auth_provider
+                    existing_profile.save()
+                
+                created = False
+                user_profile = existing_profile
+            else:
+                # Create a new user profile if no matching email found
+                user_profile, created = UserProfile.objects.get_or_create(
+                    user_id=user_id,
+                    defaults={
+                        'email': email,
+                        'auth_provider': auth_provider
+                    }
+                )
+        except Exception as e:
+            logger.error(f"Error looking up user profile: {str(e)}")
+            # Fallback to get_or_create by user_id only
+            user_profile, created = UserProfile.objects.get_or_create(
+                user_id=user_id,
+                defaults={
+                    'email': email,
+                    'auth_provider': auth_provider
+                }
+            )
+            
         # Generate JWT token
         token_payload = {
             'sub': user_id,
@@ -136,6 +162,7 @@ def register_user(request):
             'redirect_url': redirect_url
         })
     except Exception as e:
+        logger.error(f"Registration error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['GET'])
