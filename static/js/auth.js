@@ -1,126 +1,116 @@
-// Save ?next from the URL to localStorage so we can redirect after login
-const urlParams = new URLSearchParams(window.location.search);
-const next = urlParams.get('next');
-if (next) {
-    localStorage.setItem('next_path', next);
-}
-
-// Initialize Supabase client - will be properly initialized after fetching config
-let supabaseClient;
-let domainConfig;
-
-// Fetch Supabase configuration from the server
-async function initializeSupabase() {
-    const messageEl = document.getElementById('auth-message');
-    
-    try {
-        // If an auth error happened previously, clear it from localStorage
-        localStorage.removeItem('auth_error');
-        
-        // Show loading message
-        if (messageEl) {
-            messageEl.textContent = 'Initializing...';
-            messageEl.classList.remove('hidden');
-            messageEl.style.color = '#A15DF8';
-        }
-        
-        // Get the Supabase configuration
-        const response = await fetch('/accounts/supabase-config/');
-        if (!response.ok) {
-            throw new Error('Failed to load authentication configuration');
-        }
-        
-        const config = await response.json();
-        supabaseClient = window.supabase.createClient(config.url, config.key);
-        
-        // Get domain configuration
-        const domainResponse = await fetch('/accounts/domain-config/');
-        if (domainResponse.ok) {
-            domainConfig = await domainResponse.json();
-        }
-        
-        // If we're on the auth-callback page, hide loading message
-        if (window.location.pathname.includes('/auth-callback/')) {
-            // The callback page has its own logic
-            return;
-        }
-        
-        // If message element exists, show ready message briefly then hide it
-        if (messageEl) {
-            messageEl.textContent = 'Ready';
-            setTimeout(() => {
-                messageEl.classList.add('hidden');
-            }, 500);
-        }
-    } catch (error) {
-        console.error('Error initializing authentication:', error);
-        if (messageEl) {
-            messageEl.textContent = 'Error loading authentication service. Please refresh the page.';
-            messageEl.classList.remove('hidden');
-            messageEl.style.color = 'red';
-        }
-    }
-}
-
-// Function to handle signup with different providers
-async function signupWithProvider(provider) {
-    const messageEl = document.getElementById('auth-message');
-    
-    try {
-        // Ensure Supabase is initialized
-        if (!supabaseClient) {
-            await initializeSupabase();
-        }
-        
-        // Show loading message
-        if (messageEl) {
-            messageEl.textContent = `Signing up with ${provider}...`;
-            messageEl.classList.remove('hidden');
-            messageEl.style.color = '#A15DF8';
-        }
-        
-        // Save email for potential error recovery
-        const emailInput = document.getElementById('email');
-        if (emailInput && emailInput.value) {
-            localStorage.setItem('signup_email', emailInput.value);
-        }
-        
-        // Determine the callback URL
-        let redirectUrl;
-        if (domainConfig && domainConfig.auth_callback_url) {
-            redirectUrl = domainConfig.auth_callback_url;
-        } else {
-            const currentDomain = window.location.origin;
-            redirectUrl = `${currentDomain}/accounts/auth-callback/`;
-        }
-        
-        // Attempt to sign in with OAuth
-        const { data, error } = await supabaseClient.auth.signInWithOAuth({
-            provider: provider,
-            options: {
-                redirectTo: redirectUrl
-            }
-        });
-
-        if (error) {
-            throw error;
-        }
-        
-        // User will be redirected to provider's auth page
-    } catch (error) {
-        console.error(`Error signing up with ${provider}:`, error);
-        localStorage.setItem('auth_error', error.message);
-        
-        if (messageEl) {
-            messageEl.textContent = `Error: ${error.message}`;
-            messageEl.classList.remove('hidden');
-            messageEl.style.color = 'red';
-        }
-    }
-}
-
-// Initialize when DOM is loaded
+// auth.js - Minimal authentication handler
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Supabase
-    initializeSupabase();
+    // Store next path from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const next = urlParams.get('next');
+    if (next) {
+        localStorage.setItem('next_path', next);
+    }
+    
+    // Initialize message element
+    const messageEl = document.getElementById('auth-message');
+    if (messageEl) {
+        messageEl.classList.remove('hidden');
+    }
+    
+    // Function to show status messages
+    function showStatus(message, isError = false) {
+        if (messageEl) {
+            messageEl.textContent = message;
+            messageEl.style.color = isError ? 'red' : '#A15DF8';
+        }
+        console.log(message);
+    }
+    
+    // Load Supabase configuration
+    loadSupabaseConfig();
+    
+    // Set up authentication provider buttons
+    setupAuthButtons();
+    
+    async function loadSupabaseConfig() {
+        try {
+            showStatus('Loading authentication...');
+            
+            const response = await fetch('/accounts/supabase-config/');
+            if (!response.ok) {
+                throw new Error('Failed to load authentication settings');
+            }
+            
+            const config = await response.json();
+            window.supabaseClient = supabase.createClient(config.url, config.key);
+            
+            showStatus('Authentication ready');
+            setTimeout(() => {
+                if (messageEl) messageEl.classList.add('hidden');
+            }, 1000);
+        } catch (error) {
+            console.error('Failed to initialize authentication:', error);
+            showStatus('Authentication setup failed. Please refresh the page.', true);
+        }
+    }
+    
+    function setupAuthButtons() {
+        // Set up Google auth button
+        const googleBtn = document.querySelector('[onclick="signupWithProvider(\'google\')"]');
+        if (googleBtn) {
+            googleBtn.removeAttribute('onclick');
+            googleBtn.addEventListener('click', () => handleAuth('google'));
+        }
+        
+        // Set up Facebook auth button
+        const facebookBtn = document.querySelector('[onclick="signupWithProvider(\'facebook\')"]');
+        if (facebookBtn) {
+            facebookBtn.removeAttribute('onclick');
+            facebookBtn.addEventListener('click', () => handleAuth('facebook'));
+        }
+        
+        // Set up Twitter/X auth button
+        const twitterBtn = document.querySelector('[onclick="signupWithProvider(\'twitter\')"]');
+        if (twitterBtn) {
+            twitterBtn.removeAttribute('onclick');
+            twitterBtn.addEventListener('click', () => handleAuth('twitter'));
+        }
+    }
+    
+    async function handleAuth(provider) {
+        try {
+            showStatus(`Signing in with ${provider}...`);
+            
+            if (!window.supabaseClient) {
+                throw new Error('Authentication service not initialized');
+            }
+            
+            // Store the current time so we can track redirects
+            localStorage.setItem('auth_start_time', Date.now().toString());
+            
+            // Store the email if available in a form
+            const emailInput = document.getElementById('email');
+            if (emailInput && emailInput.value) {
+                localStorage.setItem('auth_email', emailInput.value);
+            }
+            
+            // Calculate the callback URL
+            const callbackUrl = `${window.location.origin}/accounts/auth-callback/`;
+            
+            // Clear any previous errors
+            localStorage.removeItem('auth_error');
+            
+            // Initiate OAuth login
+            const { error } = await window.supabaseClient.auth.signInWithOAuth({
+                provider: provider,
+                options: {
+                    redirectTo: callbackUrl
+                }
+            });
+
+            if (error) throw error;
+            
+            // At this point, the browser will redirect to the provider's login page
+        } catch (error) {
+            console.error(`Authentication error with ${provider}:`, error);
+            localStorage.setItem('auth_error', error.message);
+            showStatus(`Authentication error: ${error.message}`, true);
+        }
+    }
 }); 
