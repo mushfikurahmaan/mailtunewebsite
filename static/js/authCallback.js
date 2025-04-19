@@ -5,6 +5,29 @@ document.addEventListener('DOMContentLoaded', async function() {
     const messageEl = document.getElementById('auth-message');
     
     try {
+        // Check for error parameters in URL and handle them directly
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlError = urlParams.get('error');
+        const urlErrorDesc = urlParams.get('error_description');
+        
+        const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
+        const hashError = hashParams.get('error');
+        const hashErrorDesc = hashParams.get('error_description');
+        
+        // Remove error parameters from URL to prevent issues on refresh
+        if ((urlError || hashError) && window.history) {
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState(null, '', cleanUrl);
+        }
+        
+        // Check specifically for the "Database error saving new user" message
+        // This indicates the user exists in Supabase but the registration failed
+        const errorDesc = urlErrorDesc || hashErrorDesc;
+        if (errorDesc && errorDesc.includes('Database error saving new user')) {
+            console.log("Detected database error from Supabase, will try to get session directly");
+            // We'll continue with the flow and try to get the session directly
+        }
+        
         // Fetch configuration from the server
         const response = await fetch('/accounts/supabase-config/');
         if (!response.ok) {
