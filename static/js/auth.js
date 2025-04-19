@@ -28,8 +28,8 @@ async function initializeSupabase() {
             domainConfig = await domainResponse.json();
         }
         
-        // If we're on the auth-callback page, check authentication immediately
-        if (window.location.pathname.includes('/auth-callback/')) {
+        // Only check authentication on pages other than auth-callback
+        if (!window.location.pathname.includes('/auth-callback/')) {
             checkAuthentication();
         }
     } catch (error) {
@@ -201,6 +201,13 @@ async function checkAuthentication() {
             return; // The init function will call this again after initializing
         }
         
+        // Check if we're on the auth-callback page
+        if (window.location.pathname.includes('/auth-callback/')) {
+            // We are on the auth-callback page, which handles its own logic
+            return;
+        }
+        
+        // For other pages, just check if user is authenticated
         const { data: { session }, error } = await supabaseClient.auth.getSession();
         
         if (error) throw error;
@@ -219,6 +226,12 @@ async function checkAuthentication() {
         }
     } catch (error) {
         console.error('Error checking authentication status:', error);
+        
+        // If there's an error but we're not on the auth-callback page,
+        // redirect to the auth-callback page for proper handling
+        if (!window.location.pathname.includes('/auth-callback/')) {
+            window.location.href = window.location.origin + '/accounts/auth-callback/';
+        }
     }
 }
 
