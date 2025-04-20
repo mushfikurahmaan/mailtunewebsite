@@ -68,8 +68,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     avatar_url: userMetadata.avatar_url || null
                 };
                 
-                console.log('Sending user data to backend:', userData);
-                
                 // Call backend to register the user
                 const registerResponse = await fetch('/accounts/register/', {
                     method: 'POST',
@@ -79,11 +77,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                     body: JSON.stringify(userData)
                 });
                 
-                // Get detailed error message from response if available
                 if (!registerResponse.ok) {
-                    const errorData = await registerResponse.json();
-                    console.error('Backend registration error:', errorData);
-                    throw new Error(errorData.error || 'Failed to register with backend');
+                    throw new Error('Failed to register with backend');
                 }
                 
                 const registerData = await registerResponse.json();
@@ -131,27 +126,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                     messageEl.style.color = 'red';
                 }
                 
-                // Add a retry button for the user
-                const retryButton = document.createElement('button');
-                retryButton.textContent = 'Retry Registration';
-                retryButton.className = 'mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-purple-700 transition-colors';
-                retryButton.onclick = () => window.location.reload();
-                
-                // Add contact support information
-                const supportInfo = document.createElement('p');
-                supportInfo.textContent = 'If the problem persists, please contact support.';
-                supportInfo.className = 'mt-2 text-sm text-gray-400';
-                
-                // Add the elements to the page
-                if (messageEl && messageEl.parentNode) {
-                    messageEl.parentNode.appendChild(retryButton);
-                    messageEl.parentNode.appendChild(supportInfo);
-                }
-                
-                // Redirect to signup page after a longer delay
+                // Redirect to signup page after error
                 setTimeout(() => {
                     window.location.href = "/accounts/signup/";
-                }, 10000);
+                }, 3000);
             }
         } else {
             if (messageEl) {
