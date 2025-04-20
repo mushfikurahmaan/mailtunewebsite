@@ -73,69 +73,101 @@ def register_user(request):
         name = data.get('name')  # Get name from auth provider metadata
         avatar_url = data.get('avatar_url')  # Get avatar URL from auth provider
         
+        # Log the incoming data for debugging
+        logger.info(f"Registration attempt for user ID: {user_id}, email: {email}, provider: {auth_provider}")
+        
         if not user_id or not email:
+            logger.warning(f"Missing required fields for registration: user_id={user_id}, email={email}")
             return JsonResponse({'error': 'Missing required fields'}, status=400)
             
         # Create user profile
-        user_profile, created = UserProfile.objects.get_or_create(
-            user_id=user_id,
-            defaults={
-                'email': email,
-                'auth_provider': auth_provider
-            }
-        )
+        try:
+            user_profile, created = UserProfile.objects.get_or_create(
+                user_id=user_id,
+                defaults={
+                    'email': email,
+                    'auth_provider': auth_provider
+                }
+            )
+            logger.info(f"User profile {'created' if created else 'retrieved'} for {email}")
+        except Exception as db_error:
+            logger.error(f"Database error creating user profile: {str(db_error)}")
+            return JsonResponse({'error': f'Database error: {str(db_error)}'}, status=500)
         
         # Generate JWT token
-        token_payload = {
-            'sub': user_id,
-            'email': email,
-            'name': name,  # Add name to token payload
-            'exp': datetime.now(UTC) + timedelta(days=30)
-        }
+        try:
+            token_payload = {
+                'sub': user_id,
+                'email': email,
+                'name': name,  # Add name to token payload
+                'exp': datetime.now(UTC) + timedelta(days=30)
+            }
+            
+            token = jwt.encode(
+                token_payload,
+                settings.JWT_AUTH['JWT_SECRET_KEY'],
+                algorithm=settings.JWT_AUTH['JWT_ALGORITHM']
+            )
+            logger.info(f"JWT token generated for {email}")
+        except Exception as jwt_error:
+            logger.error(f"JWT generation error: {str(jwt_error)}")
+            return JsonResponse({'error': f'Authentication error: {str(jwt_error)}'}, status=500)
         
-        token = jwt.encode(
-            token_payload,
-            settings.JWT_AUTH['JWT_SECRET_KEY'],
-            algorithm=settings.JWT_AUTH['JWT_ALGORITHM']
-        )
-        
-        # Check if a plan was selected and determine redirect URL
-        selected_plan = request.session.get('selected_plan', 'FREE')
+        # Safely get session data - use a default if session is not available
+        try:
+            selected_plan = request.session.get('selected_plan', 'FREE')
+            logger.info(f"Selected plan from session: {selected_plan}")
+        except Exception as session_error:
+            logger.warning(f"Session error: {str(session_error)}, defaulting to FREE plan")
+            selected_plan = 'FREE'
         
         # Validate the selected plan is a valid subscription choice
         valid_tiers = dict(UserProfile.SUBSCRIPTION_CHOICES).keys()
         if selected_plan not in valid_tiers:
             selected_plan = 'FREE'
+            logger.info(f"Invalid plan, defaulting to FREE")
         
-        # For new users, always set the subscription tier to FREE initially
-        # They can upgrade later if needed
-        if created:
-            user_profile.subscription_tier = 'FREE'
-            user_profile.save()
-        # Only update the tier if the user specifically selected a paid plan
-        elif selected_plan != 'FREE':
-            user_profile.subscription_tier = selected_plan
-            user_profile.save()
-        
-        # Determine redirect URL based on plan
-        if selected_plan == 'FREE':
-            redirect_url = '/accounts/dashboard/'
-        else:
-            redirect_url = '/accounts/checkout/'
+        try:
+            # For new users, always set the subscription tier to FREE initially
+            # They can upgrade later if needed
+            if created:
+                user_profile.subscription_tier = 'FREE'
+                user_profile.save()
+                logger.info(f"New user {email} set to FREE tier")
+            # Only update the tier if the user specifically selected a paid plan
+            elif selected_plan != 'FREE':
+                user_profile.subscription_tier = selected_plan
+                user_profile.save()
+                logger.info(f"Existing user {email} updated to {selected_plan} tier")
             
-        return JsonResponse({
-            'token': token,
-            'user': {
-                'id': user_profile.user_id,
-                'email': user_profile.email,
-                'subscription_tier': user_profile.subscription_tier,
-                'emails_transformed': user_profile.total_emails_transformed,
-                'name': name,  # Include name in response
-                'avatar_url': avatar_url  # Include avatar URL in response
-            },
-            'redirect_url': redirect_url
-        })
+            # Determine redirect URL based on plan
+            if selected_plan == 'FREE':
+                redirect_url = '/accounts/dashboard/'
+            else:
+                redirect_url = '/accounts/checkout/'
+            
+            response_data = {
+                'token': token,
+                'user': {
+                    'id': user_profile.user_id,
+                    'email': user_profile.email,
+                    'subscription_tier': user_profile.subscription_tier,
+                    'emails_transformed': user_profile.total_emails_transformed,
+                    'name': name,  # Include name in response
+                    'avatar_url': avatar_url  # Include avatar URL in response
+                },
+                'redirect_url': redirect_url
+            }
+            
+            logger.info(f"Registration successful for {email}, redirecting to {redirect_url}")
+            return JsonResponse(response_data)
+        
+        except Exception as profile_error:
+            logger.error(f"Error updating user profile: {str(profile_error)}")
+            return JsonResponse({'error': f'User profile error: {str(profile_error)}'}, status=500)
+            
     except Exception as e:
+        logger.error(f"Unhandled exception in register_user: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['GET'])
