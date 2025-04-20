@@ -249,3 +249,24 @@ def get_remaining_transforms(user_profile):
             logger.error(f"Error calculating transforms for {user_profile.email}: {str(e)}")
             # Return 0 as a safe default
             return 0
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def test_db_connection(request):
+    """
+    Simple endpoint to test database connectivity
+    """
+    try:
+        # Try to count the number of users as a simple DB operation
+        from .models import UserProfile
+        user_count = UserProfile.objects.count()
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Database connection working',
+            'user_count': user_count
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Database connection failed: {str(e)}'
+        }, status=500)

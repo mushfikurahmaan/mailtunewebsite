@@ -19,4 +19,5 @@ urlpatterns = [
     path('subscribe/', views.update_subscription, name='update_subscription'),
     path('supabase-config/', supabase_config, name='supabase_config'),
     path('domain-config/', domain_config, name='domain_config'),
+    path('test-db/', views.test_db_connection, name='test_db_connection'),
 ] 
